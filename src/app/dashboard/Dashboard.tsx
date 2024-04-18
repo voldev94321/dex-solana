@@ -5,10 +5,16 @@ import TopBar from "@/layouts/TopBar";
 import React from "react";
 import AllPools from "./AllPools";
 import MyPositions from "./MyPositions";
+import { useRouter } from "next/navigation";
 
 const tabs = ["All Pools", "My Positions"];
 const DashBoard = () => {
   const [selectedTab, setSelectedTab] = React.useState(0);
+  const router = useRouter();
+
+  const handleCreateNewPosition = () => {
+    router.push('/create-pool');
+  }
 
   return (
     <div>
@@ -20,7 +26,7 @@ const DashBoard = () => {
           you <br />
           to receive a share of its trading volume and more.
         </div>
-        <Button className="mt-4 bg-primary text-md px-6">
+        <Button className="mt-4 bg-primary text-md px-6" onClick={handleCreateNewPosition}>
           + Create a new position
         </Button>
         <div className="flex gap-2 mt-8">

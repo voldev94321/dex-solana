@@ -16,14 +16,9 @@ const Pagination = () => {
         <div>Rows per page</div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <div className="px-2 py-1 bg-gray-50 rounded-xl ml-2 border-2 border-gray-100">
-              10 ▽
+            <div className="px-2 py-1 bg-gray-50 rounded-xl ml-2 border-2 border-gray-100 items-center flex gap-1">
+              10 <span className="text-2xs">▼</span>
             </div>
-            {/* {balance ? (
-                    <div>{toFixed(balance, 2)} SOL</div>
-                  ) : (
-                    <div>0 SOL</div>
-                  )} */}
           </DropdownMenuTrigger>
           <DropdownMenuContent className="">
             {pageShow.map((page) => (

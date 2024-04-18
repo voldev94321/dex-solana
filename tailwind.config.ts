@@ -21,6 +21,9 @@ const config = {
       colors: {
         primary: "#0350E6",
       },
+      fontSize: {
+        "2xs": ['11px', '14px'],
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

@@ -78,7 +78,10 @@ const WalletConnection = () => {
                     "connecting..."
                   ) : (
                     <div className="flex gap-2 items-center">
-                      <MdAccountBalanceWallet  color="white" className="w-5 h-5"/>
+                      <MdAccountBalanceWallet
+                        color="white"
+                        className="w-5 h-5"
+                      />
                       Connect Wallet
                     </div>
                   )}
@@ -89,6 +92,7 @@ const WalletConnection = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className="flex gap-2 bg-black text-white z-50 md:w-[170px] w-[170px] ">
+                  <div className="!w-2 h-2 bg-green-400 rounded-full">&nbsp;&nbsp;</div>
                   <div className="w-full">
                     <div className=" truncate w-full ">
                       {publicKey.toBase58()}
