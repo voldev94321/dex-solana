@@ -6,6 +6,7 @@ import React from "react";
 import AllPools from "./AllPools";
 import MyPositions from "./MyPositions";
 import { useRouter } from "next/navigation";
+import BlackTab from "@/components/tabs/BlackTab";
 
 const tabs = ["All Pools", "My Positions"];
 const DashBoard = () => {
@@ -13,8 +14,8 @@ const DashBoard = () => {
   const router = useRouter();
 
   const handleCreateNewPosition = () => {
-    router.push('/create-pool');
-  }
+    router.push("/create-pool");
+  };
 
   return (
     <div>
@@ -26,25 +27,19 @@ const DashBoard = () => {
           you <br />
           to receive a share of its trading volume and more.
         </div>
-        <Button className="mt-4 bg-primary text-md px-6" onClick={handleCreateNewPosition}>
+        <Button
+          className="mt-4 bg-primary text-md px-6"
+          onClick={handleCreateNewPosition}
+        >
           + Create a new position
         </Button>
-        <div className="flex gap-2 mt-8">
-          {tabs.map((value, index) => (
-            <Button
-              key={index}
-              className={`rounded-full ${
-                selectedTab == index
-                  ? "bg-black text-white"
-                  : "bg-gray-200 text-black"
-              }`}
-              onClick={()=>setSelectedTab(index)}
-            >
-              {value}
-            </Button>
-          ))}
+        <div className="mt-8">
+          <BlackTab
+            data={tabs}
+            onTabChanged={(index: number) => setSelectedTab(index)}
+          />
         </div>
-        { selectedTab == 0 ? <AllPools/> : <MyPositions/> }
+        {selectedTab == 0 ? <AllPools /> : <MyPositions />}
       </div>
     </div>
   );
