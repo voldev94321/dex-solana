@@ -3,6 +3,7 @@
 import BlackTab from "@/components/tabs/BlackTab";
 import React from "react";
 import AddLiquidity from "./AddLiquidity";
+import RemoveLiquidity from "./RemoveLiquidity";
 
 const tabs = ["Add", "Remove", "Fees"];
 const Manage = () => {
@@ -16,6 +17,7 @@ const Manage = () => {
     </div>
     <div className="mt-4">
         {selectedTab == 0 && <AddLiquidity/>}
+        {selectedTab == 1 && <RemoveLiquidity/>}
     </div>
   </div>;
 };

@@ -8,7 +8,7 @@ const TokenSummary = ({}: TokenSummaryProps) => {
     <div>
       <div className="mt-2 flex justify-between items-center bg-white rounded-lg px-4 py-2 border-2 border-gray-50">
         <div className="flex gap-1 items-center">
-          <img src="/ico/tether.png" alt="tether" className="w-4 h-4" />
+          <img src="/ico/tether.png" alt="tether" className="w-6 h-6" />
           <div>USDT</div>
         </div>
         <div className="text-gray-400 text-right flex-grow">
@@ -19,7 +19,7 @@ const TokenSummary = ({}: TokenSummaryProps) => {
       </div>
       <div className="mt-2 flex justify-between items-center bg-white rounded-lg px-4 py-2 border-2 border-gray-50">
         <div className="flex gap-1 items-center">
-          <img src="/ico/solana.png" alt="tether" className="w-4 h-4" />
+          <img src="/ico/solana.png" alt="tether" className="w-6 h-6" />
           <div>SOL</div>
         </div>
         <div className="text-gray-400 text-right flex-grow">

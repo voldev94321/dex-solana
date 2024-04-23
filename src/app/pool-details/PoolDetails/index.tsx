@@ -6,6 +6,7 @@ import { BsBoxArrowUpRight } from "react-icons/bs";
 import Manage from "./Manage";
 import BackButton from "@/components/buttons/BackButton";
 import PositionDetails from "./PositionDetails";
+import UnclaimedRewards from "./UnclaimedRewards";
 
 const PoolDetails = () => {
   return (
@@ -49,7 +50,10 @@ const PoolDetails = () => {
       </div>
       <div className="grid grid-cols-2 mt-6 gap-4">
         <Manage />
-        <PositionDetails/>
+        <div>
+          <PositionDetails />
+          <UnclaimedRewards />
+        </div>
       </div>
     </div>
   );
