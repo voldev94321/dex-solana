@@ -12,6 +12,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { MdAccountBalanceWallet } from "react-icons/md";
+import { abbreviateTokenAddress } from "@/lib/utils";
+import { FaCheckCircle, FaCopy } from "react-icons/fa";
+import { FiClock, FiMinusCircle } from "react-icons/fi";
+import { BsBoxArrowUpRight } from "react-icons/bs";
 
 //handle wallet balance fixed to 2 decimal numbers without rounding
 export function toFixed(num: number, fixed: number): string {
@@ -92,10 +96,12 @@ const WalletConnection = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className="flex gap-2 bg-black text-white z-50 md:w-[170px] w-[170px] ">
-                  <div className="!w-2 h-2 bg-green-400 rounded-full">&nbsp;&nbsp;</div>
+                  <div className="!w-2 h-2 bg-green-400 rounded-full">
+                    &nbsp;&nbsp;
+                  </div>
                   <div className="w-full">
-                    <div className=" truncate w-full ">
-                      {publicKey.toBase58()}
+                    <div className=" w-full ">
+                      {abbreviateTokenAddress(publicKey.toBase58())}
                     </div>
                   </div>
                   {/* {balance ? (
@@ -105,15 +111,87 @@ const WalletConnection = () => {
                   )} */}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-[170px] bg-black hover:bg-black focus:!bg-black">
-                <DropdownMenuItem className="flex justify-center hover:bg-black focus:!bg-black !px-0">
-                  <Button
-                    className="bg-transparent z-50 text-white font-slackey w-full"
-                    onClick={handleDisconnect}
-                  >
-                    Disconnect
-                  </Button>
-                </DropdownMenuItem>
+              <DropdownMenuContent className="bg-white hover:bg-white focus:!bg-white">
+                <div className="m-4">CONNECTED</div>
+                <div className="flex justify-between gap-2 items-center mx-4 cursor-pointer">
+                  <div className="font-bold">
+                    {abbreviateTokenAddress(publicKey.toBase58())}
+                  </div>
+                  <div>
+                    <FaCopy className="text-gray-600" />
+                  </div>
+                </div>
+                <hr className="my-2 -mx-1" />
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <div className="flex gap-4 items-center hover:bg-gray-100 px-4 py-2 cursor-pointer">
+                      <div className="">
+                        <FiClock className="text-black" />
+                      </div>
+                      <div>Recent transactions</div>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <div className="text-2xl font-bold">
+                      Recent transactions
+                    </div>
+                    <div className="relative">
+                      <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead className="text-xs uppercase dark:bg-gray-700 dark:text-gray-400">
+                          <tr className="border-b">
+                            <th scope="col" className="px-2 py-3">
+                              Status
+                            </th>
+                            <th scope="col" className="px-2 py-3">
+                              Transaction type
+                            </th>
+                            <th scope="col" className="px-2 py-3">
+                              Details
+                            </th>
+                            <th scope="col" className="px-2 py-3">
+                              Date/Time
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-100 rounded-lg">
+                            <td className="px-2 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                              <div className=" flex items-center gap-2">
+                                <span>
+                                  <FaCheckCircle className="text-green-400" />
+                                </span>
+                                Success
+                              </div>
+                            </td>
+                            <th className="px-2 py-4" scope="row">
+                              <div>Swap</div>
+                              <div className="text-gray-400">(Phantom)</div>
+                            </th>
+                            <td className="px-2 py-4">
+                              Swapped 1.0 KIT for <br /> 0.00002118 SOL
+                            </td>
+                            <td className="px-2 py-4">
+                              <div className="flex gap-2 items-center">
+                                  22/03/2024 11:28 GMT <BsBoxArrowUpRight/>
+                              </div>
+                            </td>
+                          </tr>
+                          
+                        </tbody>
+                      </table>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+                <hr className="-mx-4 my-2" />
+                <div
+                  className="flex gap-4 items-center hover:bg-gray-100 px-4 py-2 cursor-pointer"
+                  onClick={handleDisconnect}
+                >
+                  <div className="">
+                    <FiMinusCircle className="text-black" />
+                  </div>
+                  <div>Disconnect</div>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
