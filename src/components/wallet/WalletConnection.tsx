@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import React, { useEffect, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
@@ -16,6 +17,7 @@ import { abbreviateTokenAddress } from "@/lib/utils";
 import { FaCheckCircle, FaCopy } from "react-icons/fa";
 import { FiClock, FiMinusCircle } from "react-icons/fi";
 import { BsBoxArrowUpRight } from "react-icons/bs";
+import { useToast } from "../ui/use-toast";
 
 //handle wallet balance fixed to 2 decimal numbers without rounding
 export function toFixed(num: number, fixed: number): string {
@@ -25,7 +27,9 @@ export function toFixed(num: number, fixed: number): string {
 
 const WalletConnection = () => {
   const { connection } = useConnection();
-  const { select, wallets, publicKey, disconnect, connecting } = useWallet();
+  const { toast } = useToast();
+  const { select, wallets, publicKey, disconnect, connecting, wallet } =
+    useWallet();
 
   const [open, setOpen] = useState<boolean>(false);
   const [balance, setBalance] = useState<number | null>(null);
@@ -53,6 +57,15 @@ const WalletConnection = () => {
 
   useEffect(() => {
     setUserWalletAddress(publicKey?.toBase58()!);
+    if (wallet) {
+      toast({
+        title: "" + wallet?.adapter.name + " wallet connected",
+        description: publicKey
+          ? abbreviateTokenAddress(publicKey.toBase58())
+          : "",
+        status: "SUCCESS",
+      });
+    }
   }, [publicKey]);
 
   const handleWalletSelect = async (walletName: any) => {
@@ -68,6 +81,10 @@ const WalletConnection = () => {
 
   const handleDisconnect = async () => {
     disconnect();
+    toast({
+      title: "Wallet disconnected",
+      status: "ERROR",
+    });
   };
 
   return (
@@ -172,11 +189,10 @@ const WalletConnection = () => {
                             </td>
                             <td className="px-2 py-4">
                               <div className="flex gap-2 items-center">
-                                  22/03/2024 11:28 GMT <BsBoxArrowUpRight/>
+                                22/03/2024 11:28 GMT <BsBoxArrowUpRight />
                               </div>
                             </td>
                           </tr>
-                          
                         </tbody>
                       </table>
                     </div>
