@@ -57,15 +57,15 @@ const WalletConnection = () => {
 
   useEffect(() => {
     setUserWalletAddress(publicKey?.toBase58()!);
-    if (wallet) {
-      toast({
-        title: "" + wallet?.adapter.name + " wallet connected",
-        description: publicKey
-          ? abbreviateTokenAddress(publicKey.toBase58())
-          : "",
-        status: "SUCCESS",
-      });
-    }
+    // if (wallet) {
+    //   toast({
+    //     title: "" + wallet?.adapter.name + " wallet connected",
+    //     description: publicKey
+    //       ? abbreviateTokenAddress(publicKey.toBase58())
+    //       : "",
+    //     status: "SUCCESS",
+    //   });
+    // }
   }, [publicKey]);
 
   const handleWalletSelect = async (walletName: any) => {
@@ -73,6 +73,11 @@ const WalletConnection = () => {
       try {
         select(walletName);
         setOpen(false);
+        toast({
+          title: "" + walletName + " wallet connected",
+          description: "",
+          status: "SUCCESS",
+        });
       } catch (error) {
         console.log("wallet connection err : ", error);
       }
