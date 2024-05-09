@@ -11,29 +11,55 @@ import { BsBoxArrowUpRight } from "react-icons/bs";
 import { FaCopy } from "react-icons/fa";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import { useSelector } from "react-redux";
+import { getTokenList } from "@/apis/token";
 
 /* eslint-disable @next/next/no-img-element */
 
 const defaultTokens = [
   {
-    icon: "/ico/solana.png",
-    label: "SOL",
+    coingeckoId: "solana",
+    decimals: 9,
+    logoURI:
+      "https://cdn.jsdelivr.net/gh/saber-hq/spl-token-icons@master/icons/101/So11111111111111111111111111111111111111112.png",
+    mint: "So11111111111111111111111111111111111111112",
+    name: "Solana",
+    poolToken: false,
+    symbol: "SOL",
+    whitelisted: true,
   },
   {
-    icon: "/ico/ninja.png",
-    label: "NINJA",
+    coingeckoId: "ninja-protocol",
+    decimals: 6,
+    logoURI:
+      "https://assets.coingecko.com/coins/images/18442/large/ninja.PNG?1632006127",
+    mint: "FgX1WD9WzMU3yLwXaFSarPfkgzjLb2DZCqmkx9ExpuvJ",
+    name: "Ninja Protocol",
+    poolToken: false,
+    symbol: "NINJA",
+    whitelisted: true,
   },
   {
-    icon: "/ico/tether.png",
-    label: "USDT",
+    coingeckoId: "tether",
+    decimals: 6,
+    logoURI:
+      "https://cdn.jsdelivr.net/gh/saber-hq/spl-token-icons@master/icons/101/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB.svg",
+    mint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+    name: "Tether",
+    poolToken: false,
+    symbol: "USDT",
+    whitelisted: true,
   },
   {
-    icon: "/ico/usdc.png",
-    label: "USDC",
-  },
-  {
-    icon: "/ico/kit.png",
-    label: "KIT",
+    coingeckoId: "usd-coin",
+    decimals: 6,
+    logoURI:
+      "https://s3.coinmarketcap.com/static-gravity/image/5a8229787b5e4c809b5914eef709b59a.png",
+    mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    name: "USD Coin",
+    poolToken: false,
+    symbol: "USDC",
+    whitelisted: true,
   },
 ];
 
@@ -134,6 +160,7 @@ const TokenSelect = () => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [isConfirmDlgOpen, setIsConfirmDlgOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
+  const { tokenList } = useSelector((state: any) => state.app);
 
   const handleKeyDown = (e: any) => {
     if (e.key == "Enter") {
@@ -198,8 +225,12 @@ const TokenSelect = () => {
                     <div className="font-bold">4px8A4</div>
                     <div>4px8A4VF...JHQLEH5g</div>
                   </div>
-                  <div><FaCopy className="text-gray-700"/></div>
-                  <Link href=""><BsBoxArrowUpRight className="text-gray-700"/></Link>
+                  <div>
+                    <FaCopy className="text-gray-700" />
+                  </div>
+                  <Link href="">
+                    <BsBoxArrowUpRight className="text-gray-700" />
+                  </Link>
                 </div>
                 <Button className="bg-primary">I understand, Confirm</Button>
                 <Button className="bg-transparent text-black">Cancel</Button>
@@ -209,39 +240,39 @@ const TokenSelect = () => {
           <div className="flex justify-between items-center">
             {defaultTokens.map((token) => (
               <div
-                key={token.label}
+                key={token.symbol}
                 className="flex gap-2 items-center bg-gray-50 border-2 border-gray-100 rounded-lg p-2 cursor-pointer"
               >
                 <img
-                  src={token.icon}
+                  src={token.logoURI}
                   alt="token"
                   className="w-6 h-6 rounded-full"
                 />
-                <div>{token.label}</div>
+                <div>{token.symbol}</div>
               </div>
             ))}
           </div>
           <Card>
             <div className="-mx-2 max-h-[500px] overflow-auto">
-              {tokens.map((token) => (
+              {tokenList.map((token: any) => (
                 <div
-                  key={token.label}
+                  key={token.symbol}
                   className="flex gap-2 items-center p-2 rounded-lg hover:bg-gray-50 cursor-pointer"
                 >
-                  <img src={token.icon} alt="icon" className="w-12 h-12" />
+                  <img src={token.logoURI} alt="icon" className="w-12 h-12" />
                   <div>
                     <div className="flex gap-2 items-center">
-                      <div className="font-bold">{token.label}</div>
-                      {token.isVerified && (
+                      <div className="font-bold">{token.symbol}</div>
+                      {token.whitelisted && (
                         <HiCheckBadge className="w-5 h-5 text-green-400" />
                       )}
                     </div>
-                    <div>{token.title}</div>
+                    <div>{token.name}</div>
                   </div>
                   <div className="flex-grow"></div>
                   <div className="flex gap-4 items-center">
                     <div className="text-gray-400">
-                      {abbreviateTokenAddress(token.address)}
+                      {abbreviateTokenAddress(token.mint)}
                     </div>
                     <BsBoxArrowUpRight className="text-gray-400" />
                   </div>

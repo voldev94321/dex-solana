@@ -1,14 +1,19 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { getTokenList } from "@/apis/token";
 import Card from "@/components/Custom/Card";
 import TransparentInput from "@/components/inputs/TransparentInput";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import WalletConnection from "@/components/wallet/WalletConnection";
+import { TOKEN_ADDRESSES } from "@/constants/token";
+import { setTokenList } from "@/store/appSlice";
 import React from "react";
 import { GoQuestion } from "react-icons/go";
 import { IoMdSettings } from "react-icons/io";
+import { useDispatch } from "react-redux";
 
 const slippage = ["0.1", "0.3", "0.5", "0.7", "1.0"];
 const PRIORITY_AUTO = -1;
@@ -78,7 +83,25 @@ const TopBar = () => {
   const [selectedRPC, setSelectedRPC] = React.useState("");
   const [customRPC, setCustomRPC] = React.useState("");
 
+  const dispatch = useDispatch();
+
   const handleSettingClicked = () => {};
+
+  React.useEffect(() => {
+    getTokenList((list: any) => {
+      const tokenList = list.filter((item: any) => item.whitelisted == true);
+      tokenList.sort((a: any, b: any) =>
+        a.whitelisted && (a.mint == TOKEN_ADDRESSES.SOL ||
+        a.mint == TOKEN_ADDRESSES.NINJA ||
+        a.mint == TOKEN_ADDRESSES.USDT ||
+        a.mint == TOKEN_ADDRESSES.USDC)
+          ? -1
+          : 1
+      );
+      console.log(tokenList);
+      dispatch(setTokenList(list));
+    });
+  }, []);
 
   return (
     <div className="flex items-center justify-between px-6 border-b-2 border-gray-200">
@@ -233,7 +256,12 @@ const TopBar = () => {
               </div>
               <div className="flex gap-2 mt-2">
                 <div className="flex-grow bg-gray-50 py-2 px-4 rounded-lg border-2 border-gray-100">
-                  <TransparentInput type="text" value={customRPC} setValue={setCustomRPC} placeholder="https://"/>
+                  <TransparentInput
+                    type="text"
+                    value={customRPC}
+                    setValue={setCustomRPC}
+                    placeholder="https://"
+                  />
                 </div>
                 <Button className="bg-primary">Switch</Button>
               </div>
