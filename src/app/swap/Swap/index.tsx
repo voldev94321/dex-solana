@@ -8,9 +8,15 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { BsQuestionCircle } from "react-icons/bs";
 import { HiOutlineArrowTrendingUp } from "react-icons/hi2";
 import { SlRefresh } from "react-icons/sl";
+import useSolanaWeb3 from "@/hooks/useSolanaWeb3";
 
 const Swap = () => {
   const { connected } = useWallet();
+  const {swap} = useSolanaWeb3();
+
+  const handleSwap = () => {
+    swap()
+  }
 
   return (
     <div className="max-w-[500px] mt-12 m-auto">
@@ -37,7 +43,7 @@ const Swap = () => {
         </div>
       </Card>
       {connected ? (
-        <Button className="w-full mt-4 bg-primary">Swap!</Button>
+        <Button className="w-full mt-4 bg-primary" onClick={() => handleSwap()}>Swap!</Button>
       ) : (
         <Button className="w-full mt-4 bg-primary">Connect Wallet</Button>
       )}

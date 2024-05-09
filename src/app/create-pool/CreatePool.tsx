@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import React from "react";
 import TokenSummary from "@/components/token/TokenSummary";
+import useSolanaWeb3 from "../../hooks/useSolanaWeb3";
+import { PublicKey } from "@solana/web3.js";
 
 const feeTiers = [0.01, 0.05, 0.3, 0.5, 1, 2];
 
@@ -16,6 +18,8 @@ const CreatePool = () => {
   const [selectedRangeTab, setSelectedRangeTab] = React.useState(0);
   const [minPrice, setMinPrice] = React.useState("0");
   const [maxPrice, setMaxPrice] = React.useState("∞");
+
+  const { createpool } = useSolanaWeb3();
 
   const handleFeeClicked = (fee: number) => {
     setSelectedFee(fee);
@@ -30,7 +34,13 @@ const CreatePool = () => {
   };
 
   const handleCreate = () => {
-    router.push("/pool-details");
+    const tokenMintA = new PublicKey("8NtheYSKWDkCgWoc8HScQFkcCTF1FiFEbbriosZLNmtE");
+    const tokenMintB = new PublicKey("5hyJ6h3ABjF7zEBhc32LWT5ZUCkNx4AZkdRzKC1MUHRb");
+    const depositAmountA = 100000000;
+    const depositAmountB = 100000000;
+
+    createpool(tokenMintA, tokenMintB, depositAmountA, depositAmountB);
+    // router.push("/pool-details");
   };
 
   return (

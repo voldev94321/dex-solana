@@ -1,0 +1,617 @@
+{
+    "version": "0.1.0",
+    "name": "dex",
+    "constants": [
+      {
+        "name": "MINIMUM_LIQUIDITY",
+        "type": "u64",
+        "value": "100"
+      },
+      {
+        "name": "AUTHORITY_SEED",
+        "type": "string",
+        "value": "\"authority\""
+      },
+      {
+        "name": "LIQUIDITY_SEED",
+        "type": "string",
+        "value": "\"liquidity\""
+      }
+    ],
+    "instructions": [
+      {
+        "name": "initialize",
+        "accounts": [
+          {
+            "name": "owner",
+            "isMut": true,
+            "isSigner": true
+          },
+          {
+            "name": "globalState",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": []
+      },
+      {
+        "name": "createAmm",
+        "accounts": [
+          {
+            "name": "amm",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "admin",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The admin of the AMM"
+            ]
+          },
+          {
+            "name": "payer",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "The account paying for all rents"
+            ]
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "Solana ecosystem accounts"
+            ]
+          }
+        ],
+        "args": [
+          {
+            "name": "id",
+            "type": "publicKey"
+          },
+          {
+            "name": "fee",
+            "type": "u16"
+          }
+        ]
+      },
+      {
+        "name": "confirmPool",
+        "accounts": [
+          {
+            "name": "payer",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "The account paying for all rents"
+            ]
+          },
+          {
+            "name": "amm",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "poolAuthority",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "mintLiquidity",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "mintA",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "mintB",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "poolAccountA",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "poolAccountB",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "Solana ecosystem accounts"
+            ]
+          },
+          {
+            "name": "associatedTokenProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": []
+      },
+      {
+        "name": "createPool",
+        "accounts": [
+          {
+            "name": "payer",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "The account paying for all rents"
+            ]
+          },
+          {
+            "name": "amm",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "globalState",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "pool",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "mintA",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "mintB",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "Solana ecosystem accounts"
+            ]
+          },
+          {
+            "name": "associatedTokenProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": []
+      },
+      {
+        "name": "depositLiquidity",
+        "accounts": [
+          {
+            "name": "pool",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "poolAuthority",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "depositor",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The account paying for all rents"
+            ]
+          },
+          {
+            "name": "mintLiquidity",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "mintA",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "mintB",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "poolAccountA",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "poolAccountB",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "depositorAccountLiquidity",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "depositorAccountA",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "depositorAccountB",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "payer",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "The account paying for all rents"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "Solana ecosystem accounts"
+            ]
+          },
+          {
+            "name": "associatedTokenProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "amountA",
+            "type": "u64"
+          },
+          {
+            "name": "amountB",
+            "type": "u64"
+          }
+        ]
+      },
+      {
+        "name": "withdrawLiquidity",
+        "accounts": [
+          {
+            "name": "amm",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "pool",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "poolAuthority",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "depositor",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The account paying for all rents"
+            ]
+          },
+          {
+            "name": "mintLiquidity",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "mintA",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "mintB",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "poolAccountA",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "poolAccountB",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "depositorAccountLiquidity",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "depositorAccountA",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "depositorAccountB",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "payer",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "The account paying for all rents"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "Solana ecosystem accounts"
+            ]
+          },
+          {
+            "name": "associatedTokenProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      },
+      {
+        "name": "swapExactTokensForTokens",
+        "accounts": [
+          {
+            "name": "amm",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "pool",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "poolAuthority",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "trader",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The account doing the swap"
+            ]
+          },
+          {
+            "name": "mintA",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "mintB",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "poolAccountA",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "poolAccountB",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "traderAccountA",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "traderAccountB",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "payer",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "The account paying for all rents"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "Solana ecosystem accounts"
+            ]
+          },
+          {
+            "name": "associatedTokenProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "swapA",
+            "type": "bool"
+          },
+          {
+            "name": "inputAmount",
+            "type": "u64"
+          },
+          {
+            "name": "minOutputAmount",
+            "type": "u64"
+          }
+        ]
+      }
+    ],
+    "accounts": [
+      {
+        "name": "Amm",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "id",
+              "docs": [
+                "The primary key of the AMM"
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "admin",
+              "docs": [
+                "Account that has admin authority over the AMM"
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "fee",
+              "docs": [
+                "The LP fee taken on each trade, in basis points"
+              ],
+              "type": "u16"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Pool",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "amm",
+              "docs": [
+                "Primary key of the AMM"
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "mintA",
+              "docs": [
+                "Mint of token A"
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "mintB",
+              "docs": [
+                "Mint of token B"
+              ],
+              "type": "publicKey"
+            }
+          ]
+        }
+      },
+      {
+        "name": "GlobalState",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "owner",
+              "type": "publicKey"
+            },
+            {
+              "name": "pools",
+              "type": {
+                "vec": "publicKey"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "errors": [
+      {
+        "code": 6000,
+        "name": "InvalidFee",
+        "msg": "Invalid fee value"
+      },
+      {
+        "code": 6001,
+        "name": "InvalidMint",
+        "msg": "Invalid mint for the pool"
+      },
+      {
+        "code": 6002,
+        "name": "DepositTooSmall",
+        "msg": "Depositing too little liquidity"
+      },
+      {
+        "code": 6003,
+        "name": "OutputTooSmall",
+        "msg": "Output is below the minimum expected"
+      },
+      {
+        "code": 6004,
+        "name": "InvariantViolated",
+        "msg": "Invariant does not hold"
+      }
+    ],
+    "metadata": {
+      "address": "8VyRzhqaEgfrkc2RP7TK8dLcqYZeBsU7d6jzpmSRoiG5"
+    }
+  }
