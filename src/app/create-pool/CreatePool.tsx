@@ -9,6 +9,8 @@ import React from "react";
 import TokenSummary from "@/components/token/TokenSummary";
 import useSolanaWeb3 from "../../hooks/useSolanaWeb3";
 import { PublicKey } from "@solana/web3.js";
+import TransparentInput from "@/components/inputs/TransparentInput";
+import { useToast } from "@/components/ui/use-toast";
 
 const feeTiers = [0.01, 0.05, 0.3, 0.5, 1, 2];
 
@@ -16,10 +18,17 @@ const CreatePool = () => {
   const router = useRouter();
   const [selectedFee, setSelectedFee] = React.useState(0);
   const [selectedRangeTab, setSelectedRangeTab] = React.useState(0);
-  const [minPrice, setMinPrice] = React.useState("0");
+  const [minPrice, setMinPrice] = React.useState("");
   const [maxPrice, setMaxPrice] = React.useState("∞");
+  const [selectedTokenA, setSelectedTokenA] = React.useState<any>({});
+  const [selectedTokenB, setSelectedTokenB] = React.useState<any>({});
+
+  const [amountA, setAmountA] = React.useState(0);
+  const [amountB, setAmountB] = React.useState(0);
 
   const { createpool } = useSolanaWeb3();
+
+  const { toast } = useToast();
 
   const handleFeeClicked = (fee: number) => {
     setSelectedFee(fee);
@@ -34,13 +43,61 @@ const CreatePool = () => {
   };
 
   const handleCreate = () => {
-    const tokenMintA = new PublicKey("8NtheYSKWDkCgWoc8HScQFkcCTF1FiFEbbriosZLNmtE");
-    const tokenMintB = new PublicKey("5hyJ6h3ABjF7zEBhc32LWT5ZUCkNx4AZkdRzKC1MUHRb");
-    const depositAmountA = 100000000;
-    const depositAmountB = 100000000;
+    if (
+      !selectedTokenA.mint ||
+      !selectedTokenB.mint ||
+      selectedTokenA.mint == selectedTokenB.mint
+    ) {
+      toast({
+        title: "Please select your tokens correctly!",
+        description: "",
+        status: "ERROR",
+      });
+      return;
+    }
 
+    if (selectedFee == 0) {
+      toast({
+        title: "Please select the fee tier!",
+        description: "",
+        status: "ERROR",
+      });
+      return;
+    }
+
+    if (!amountA || amountA == 0 || !amountB || amountB == 0) {
+      toast({
+        title: "Please select your token amounts!",
+        description: "",
+        status: "ERROR",
+      });
+      return;
+    }
+
+    const tokenMintA = new PublicKey(selectedTokenA.mint);
+    const tokenMintB = new PublicKey(selectedTokenB.mint);
+    const depositAmountA =
+      amountA * Math.pow(10, selectedTokenA.tokenDecimals);
+    const depositAmountB =
+      amountB * Math.pow(10, selectedTokenB.tokenDecimals);
+    // console.log(selectedTokenB);
+  //   const depositAmountA =
+  //   amountA * Math.pow(10, 9);
+  // const depositAmountB =
+  //   amountB * Math.pow(10,9);
+
+
+    // console.log(tokenMintA, tokenMintB, depositAmountA, depositAmountB);
     createpool(tokenMintA, tokenMintB, depositAmountA, depositAmountB);
     // router.push("/pool-details");
+  };
+
+  const handleSelectTokenA = (token: any) => {
+    setSelectedTokenA(token);
+  };
+
+  const handleSelectTokenB = (token: any) => {
+    setSelectedTokenB(token);
   };
 
   return (
@@ -53,8 +110,8 @@ const CreatePool = () => {
         </div>
         <div className="mt-4 text-lg font-bold">Tokens</div>
         <div className="mt-2 flex gap-2">
-          <TokenSelect />
-          <TokenSelect />
+          <TokenSelect handleSelect={handleSelectTokenA} />
+          <TokenSelect handleSelect={handleSelectTokenB} />
         </div>
         <div className="mt-4 text-lg font-bold">Fee tier</div>
         <div className="text-gray-400 mt-2">
@@ -109,11 +166,14 @@ const CreatePool = () => {
             {selectedRangeTab == 0 ? (
               <div className="text-2xl">0</div>
             ) : (
-              <div
-                contentEditable={selectedRangeTab == 1}
-                className="text-2xl focus:outline-0"
-              >
-                {minPrice}
+              <div className="flex-grow max-w-24">
+                <TransparentInput
+                  classNames="text-right text-2xl"
+                  placeholder="0"
+                  type="number"
+                  value={minPrice}
+                  setValue={setMinPrice}
+                />
               </div>
             )}
           </div>
@@ -128,17 +188,29 @@ const CreatePool = () => {
             {selectedRangeTab == 0 ? (
               <div className="text-2xl">∞</div>
             ) : (
-              <div
-                contentEditable={selectedRangeTab == 1}
-                className="text-2xl focus:outline-0"
-              >
-                {maxPrice}
+              <div className="flex-grow max-w-24">
+                <TransparentInput
+                  classNames="text-right text-2xl"
+                  placeholder="0"
+                  type="number"
+                  value={maxPrice}
+                  setValue={setMaxPrice}
+                />
               </div>
             )}
           </div>
         </div>
         <div className="mt-4 text-lg font-bold">Liquidity deposit</div>
-        <TokenSummary/>
+        {selectedTokenA.symbol && selectedTokenB.symbol && (
+          <TokenSummary
+            tokenA={selectedTokenA}
+            tokenB={selectedTokenB}
+            valueA={amountA}
+            setValueA={setAmountA}
+            valueB={amountB}
+            setValueB={setAmountB}
+          />
+        )}
         <div className="text-gray-400 mt-2">Pool creation fees: ~0.50 SOL</div>
         <Button className="w-full mt-4 bg-primary" onClick={handleCreate}>
           Create Pool

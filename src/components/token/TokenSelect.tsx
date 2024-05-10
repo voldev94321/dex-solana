@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import React from "react";
@@ -13,6 +14,17 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { useSelector } from "react-redux";
 import { getTokenList } from "@/apis/token";
+import { useWallet } from "@solana/wallet-adapter-react";
+import {
+  Connection,
+  GetProgramAccountsFilter,
+  PublicKey,
+} from "@solana/web3.js";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { getTokenMetadata } from "@/apis/token";
+
+const rpcEndpoint = `https://api.devnet.solana.com `;
+const solanaConnection = new Connection(rpcEndpoint);
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -63,104 +75,61 @@ const defaultTokens = [
   },
 ];
 
-const tokens = [
-  {
-    icon: "/ico/solana.png",
-    label: "SOL",
-    title: "Solana",
-    address: "So11111111111111111111111111111111111111112",
-    isVerified: "true",
-  },
-  {
-    icon: "/ico/solana.png",
-    label: "SOL",
-    title: "Solana",
-    address: "So11111111111111111111111111111111111111112",
-    isVerified: "true",
-  },
-  {
-    icon: "/ico/solana.png",
-    label: "SOL",
-    title: "Solana",
-    address: "So11111111111111111111111111111111111111112",
-    isVerified: "true",
-  },
-  {
-    icon: "/ico/solana.png",
-    label: "SOL",
-    title: "Solana",
-    address: "So11111111111111111111111111111111111111112",
-    isVerified: "true",
-  },
-  {
-    icon: "/ico/solana.png",
-    label: "SOL",
-    title: "Solana",
-    address: "So11111111111111111111111111111111111111112",
-    isVerified: "true",
-  },
-  {
-    icon: "/ico/solana.png",
-    label: "SOL",
-    title: "Solana",
-    address: "So11111111111111111111111111111111111111112",
-    isVerified: "true",
-  },
-  {
-    icon: "/ico/solana.png",
-    label: "SOL",
-    title: "Solana",
-    address: "So11111111111111111111111111111111111111112",
-    isVerified: "true",
-  },
-  {
-    icon: "/ico/solana.png",
-    label: "SOL",
-    title: "Solana",
-    address: "So11111111111111111111111111111111111111112",
-    isVerified: "true",
-  },
-  {
-    icon: "/ico/solana.png",
-    label: "SOL",
-    title: "Solana",
-    address: "So11111111111111111111111111111111111111112",
-    isVerified: "true",
-  },
-  {
-    icon: "/ico/solana.png",
-    label: "SOL",
-    title: "Solana",
-    address: "So11111111111111111111111111111111111111112",
-    isVerified: "true",
-  },
-  {
-    icon: "/ico/solana.png",
-    label: "SOL",
-    title: "Solana",
-    address: "So11111111111111111111111111111111111111112",
-    isVerified: "true",
-  },
-  {
-    icon: "/ico/solana.png",
-    label: "SOL",
-    title: "Solana",
-    address: "So11111111111111111111111111111111111111112",
-    isVerified: "true",
-  },
-  {
-    icon: "/ico/solana.png",
-    label: "SOL",
-    title: "Solana",
-    address: "So11111111111111111111111111111111111111112",
-    isVerified: "true",
-  },
-];
-const TokenSelect = () => {
+const TokenSelect = ({ handleSelect }: any) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [isConfirmDlgOpen, setIsConfirmDlgOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
-  const { tokenList } = useSelector((state: any) => state.app);
+  const [tokens, setTokens] = React.useState<any[]>([]);
+  // const { tokenList } = useSelector((state: any) => state.app);
+  const wallet = useWallet();
+
+  const [selectedToken, setSelectedToken] = React.useState<any>({});
+
+  async function getTokenAccounts(
+    wallet: string,
+    solanaConnection: Connection
+  ) {
+    // console.log(wallet, solanaConnection);
+    const filters: GetProgramAccountsFilter[] = [
+      {
+        dataSize: 165, //size of account (bytes)
+      },
+      {
+        memcmp: {
+          offset: 32, //location of our query in the account (bytes)
+          bytes: wallet, //our search criteria, a base58 encoded string
+        },
+      },
+    ];
+    const accounts = await solanaConnection.getParsedProgramAccounts(
+      TOKEN_PROGRAM_ID, //new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
+      { filters: filters }
+    );
+    // console.log(
+    //   `Found ${accounts.length} token account(s) for wallet ${wallet}.`
+    // );
+    let tokenArray: any = [];
+    for (let i = 0; i < accounts.length; i++) {
+      const account = accounts[i];
+      //Parse the account data
+      const parsedAccountInfo: any = account.account.data;
+      const mintAddress: string = parsedAccountInfo["parsed"]["info"]["mint"];
+      // console.log("#!#!#!#", parsedAccountInfo);
+      const tokenBalance: number =
+        parsedAccountInfo["parsed"]["info"]["tokenAmount"]["uiAmount"];
+      const tokenDecimals: number =
+        parsedAccountInfo["parsed"]["info"]["tokenAmount"]["decimals"];
+      //Log results
+      // console.log(`Token Account No. ${i + 1}: ${account.pubkey.toString()}`);
+      // console.log(`--Token Mint: ${mintAddress}`);
+      // console.log(`--Token Balance: ${tokenBalance}`);
+      // console.log(await getTokenMetadata(mintAddress));
+      tokenArray.push({...await getTokenMetadata(mintAddress), tokenBalance, tokenDecimals});
+    }
+
+    // console.log(tokenArray);
+    setTokens(tokenArray);
+  }
 
   const handleKeyDown = (e: any) => {
     if (e.key == "Enter") {
@@ -168,6 +137,13 @@ const TokenSelect = () => {
       setIsConfirmDlgOpen(true);
     }
   };
+
+  React.useEffect(() => {
+    // console.log(wallet);
+    if (wallet.connected && wallet.publicKey) {
+      getTokenAccounts(wallet.publicKey.toString(), solanaConnection);
+    }
+  }, [wallet.connected]);
 
   return (
     <div>
@@ -179,8 +155,18 @@ const TokenSelect = () => {
               setIsDialogOpen(true);
             }}
           >
-            <img src="/ico/tether.png" alt="tether" className="w-5 h-5" />
-            <div>USDT</div>
+            {selectedToken.offchainMetadata ? <img
+              src={
+                selectedToken.offchainMetadata == undefined
+                  ? ""
+                  : selectedToken.offchainMetadata.image
+              }
+              alt="tether"
+              className="w-5 h-5"
+            /> : <div className="w-5 h-5"></div>}
+            <div>
+              {selectedToken.symbol == undefined ? "" : selectedToken.symbol}
+            </div>
             <span className="text-2xs">▼</span>
           </div>
         </DialogTrigger>
@@ -254,12 +240,20 @@ const TokenSelect = () => {
           </div>
           <Card>
             <div className="-mx-2 max-h-[500px] overflow-auto">
-              {tokenList.map((token: any) => (
+              {tokens.map((token: any) => (
                 <div
                   key={token.symbol}
                   className="flex gap-2 items-center p-2 rounded-lg hover:bg-gray-50 cursor-pointer"
+                  onClick={() => {
+                    handleSelect(token), setSelectedToken(token);
+                    setIsDialogOpen(false);
+                  }}
                 >
-                  <img src={token.logoURI} alt="icon" className="w-12 h-12" />
+                  <img
+                    src={token.offchainMetadata.image}
+                    alt="icon"
+                    className="w-12 h-12"
+                  />
                   <div>
                     <div className="flex gap-2 items-center">
                       <div className="font-bold">{token.symbol}</div>

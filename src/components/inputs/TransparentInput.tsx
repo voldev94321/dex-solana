@@ -3,8 +3,8 @@ interface TransparentInputProps {
     type: string;
     placeholder: string;
     value: any;
-    max?: number;
     setValue: React.Dispatch<React.SetStateAction<any>>;
+    max?: number;
     onKeyDown?: any;
     limit?: number;
   }

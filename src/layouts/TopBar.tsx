@@ -89,17 +89,17 @@ const TopBar = () => {
 
   React.useEffect(() => {
     getTokenList((list: any) => {
-      const tokenList = list.filter((item: any) => item.whitelisted == true);
-      tokenList.sort((a: any, b: any) =>
-        a.whitelisted && (a.mint == TOKEN_ADDRESSES.SOL ||
-        a.mint == TOKEN_ADDRESSES.NINJA ||
-        a.mint == TOKEN_ADDRESSES.USDT ||
-        a.mint == TOKEN_ADDRESSES.USDC)
-          ? -1
-          : 1
-      );
-      console.log(tokenList);
-      dispatch(setTokenList(list));
+      // const tokenList = list.filter((item: any) => item.whitelisted == true);
+      // tokenList.sort((a: any, b: any) =>
+      //   a.whitelisted && (a.mint == TOKEN_ADDRESSES.SOL ||
+      //   a.mint == TOKEN_ADDRESSES.NINJA ||
+      //   a.mint == TOKEN_ADDRESSES.USDT ||
+      //   a.mint == TOKEN_ADDRESSES.USDC)
+      //     ? -1
+      //     : 1
+      // );
+      // console.log(tokenList);
+      // dispatch(setTokenList(list));
     });
   }, []);
 

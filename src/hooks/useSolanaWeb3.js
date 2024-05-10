@@ -226,9 +226,9 @@ const useSolanaWeb3 = () => {
       const signedTransaction = await wallet.adapter.signTransaction(transaction);
       await connection.sendRawTransaction(signedTransaction.serialize());
 
-      const depositTokenAccountLiquditiy =
-      await connection.getTokenAccountBalance(liquidityAccount);
-      console.log("depositTokenAccountLiquditiy->", depositTokenAccountLiquditiy);
+      // const depositTokenAccountLiquditiy =
+      // await connection.getTokenAccountBalance(liquidityAccount);
+      // console.log("depositTokenAccountLiquditiy->", depositTokenAccountLiquditiy);
 
       const depositTokenAccountA = await connection.getTokenAccountBalance(
         holderAccountA
