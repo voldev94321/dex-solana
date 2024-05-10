@@ -124,7 +124,10 @@ const TokenSelect = ({ handleSelect }: any) => {
       // console.log(`--Token Mint: ${mintAddress}`);
       // console.log(`--Token Balance: ${tokenBalance}`);
       // console.log(await getTokenMetadata(mintAddress));
-      tokenArray.push({...await getTokenMetadata(mintAddress), tokenBalance, tokenDecimals});
+      const tokenMetadata = await getTokenMetadata(mintAddress);
+      if(tokenMetadata) {
+        tokenArray.push({...await getTokenMetadata(mintAddress), tokenBalance, tokenDecimals});
+      }
     }
 
     // console.log(tokenArray);

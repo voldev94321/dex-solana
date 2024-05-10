@@ -26,7 +26,7 @@ const CreatePool = () => {
   const [amountA, setAmountA] = React.useState(0);
   const [amountB, setAmountB] = React.useState(0);
 
-  const { createpool } = useSolanaWeb3();
+  const { createpool, getPoolInfo } = useSolanaWeb3();
 
   const { toast } = useToast();
 
@@ -42,7 +42,7 @@ const CreatePool = () => {
     setSelectedRangeTab(tab);
   };
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (
       !selectedTokenA.mint ||
       !selectedTokenB.mint ||
@@ -88,7 +88,10 @@ const CreatePool = () => {
 
 
     // console.log(tokenMintA, tokenMintB, depositAmountA, depositAmountB);
-    createpool(tokenMintA, tokenMintB, depositAmountA, depositAmountB);
+    const poolkey = await createpool(tokenMintA, tokenMintB, depositAmountA, depositAmountB);
+    console.log("poolkey->", poolkey);
+    const poolInformation = await getPoolInfo(poolkey);
+    console.log("poolInformation->", poolInformation);
     // router.push("/pool-details");
   };
 

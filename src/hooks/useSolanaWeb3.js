@@ -239,7 +239,7 @@ const useSolanaWeb3 = () => {
         holderAccountB
       );
       console.log("depositTokenAccountB->", depositTokenAccountB);
-      
+      return poolKey;
     } catch(err){
       console.log('err in usesolanaweb3', err)
       throw err;
@@ -337,9 +337,68 @@ const useSolanaWeb3 = () => {
     }
    
   }
+
+  const getPoolInfo = async(poolKey) => {
+    try {
+      if (!connected) {
+        console.error('Wallet is not connected');
+        return;
+      }
+  
+      const provider = getProvider();
+      const program = new Program(idl, programID, provider);
+      // get pool information
+      const poolInformation = await program.account.pool.fetch(poolKey);
+      console.log(poolInformation);
+      const ammKey = poolInformation.amm;
+      const tokenMintA = poolInformation.mintA;
+      const tokenMintB = poolInformation.mintB;
+
+      const [poolAuthority,_1] = await anchor.web3.PublicKey.findProgramAddress(
+        [
+          ammKey.toBuffer(),
+          tokenMintA.toBuffer(),
+          tokenMintB.toBuffer(),
+          Buffer.from("authority"),
+        ],
+        program.programId
+      );
+      const poolAccountA = getAssociatedTokenAddressSync(
+        tokenMintA,
+        poolAuthority,
+        true,
+      );
+  
+      const poolAccountB = getAssociatedTokenAddressSync(
+        tokenMintB,
+        poolAuthority,
+        true
+      );
+
+      const poolAccountABalance = await connection.getTokenAccountBalance(
+        poolAccountA
+      );
+      console.log("poolAccountABalance->", poolAccountABalance);
+  
+      const poolAccountBBalance = await connection.getTokenAccountBalance(
+        poolAccountB
+      );
+      console.log("poolAccountBBalance->", poolAccountBBalance);
+
+      return {
+        "tokenMintA": tokenMintA,
+        "tokenMintB": tokenMintB,
+        "poolAccountABalance": poolAccountABalance,
+        "poolAccountBBalance": poolAccountBBalance
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return {
     createpool,
-    swap
+    swap,
+    getPoolInfo
   };
 };
 
