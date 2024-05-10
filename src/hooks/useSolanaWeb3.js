@@ -396,50 +396,58 @@ const useSolanaWeb3 = () => {
     }
   }
 
-  const addTokenLiquidity = async(tokenA, tokenB, poolKey) => {
-    console.log(tokenA, tokenB, poolKey);
+  const addTokenLiquidity = async(tokenA, tokenB, poolkey) => {
     try {
       const provider = getProvider();
       const program = new Program(idl, programID, provider);
       const admin = publicKey;
 
-      const id = Keypair.generate().publicKey;
+      const poolKey = new PublicKey(poolkey);
+      const poolInformation = await program.account.pool.fetch(poolKey);
+      const ammKey = poolInformation.amm;
+      const tokenMintA = poolInformation.mintA;
+      const tokenMintB = poolInformation.mintB;
+      console.log("poolInformation->",poolInformation);
+      console.log("tokenA->",tokenA);
 
-      const [ammKey, _] = await anchor.web3.PublicKey.findProgramAddress(
-        [
-          id.toBuffer()
-        ],
-        program.programId
-      );
+      if(tokenMintA.toString() != tokenA.mint) {
+        console.log("wrong token A address");
+        return
+      }
 
-      const [ poolAuthority, _3] = await anchor.web3.PublicKey.findProgramAddress(
+      if(tokenMintB.toString() != tokenB.mint) {
+        console.log("wrong token B address");
+        return
+      }
+
+      const [ poolAuthority, _1] = await anchor.web3.PublicKey.findProgramAddress(
         [
           ammKey.toBuffer(),
-          tokenA.mint,
-          tokenB.mint,
+          tokenMintA.toBuffer(),
+          tokenMintB.toBuffer(),
           Buffer.from("authority"),
         ],
         program.programId
       );
 
-      const [mintLiquidity, _4] = await anchor.web3.PublicKey.findProgramAddress(
+      const [mintLiquidity, _2] = await anchor.web3.PublicKey.findProgramAddress(
         [
           ammKey.toBuffer(),
-          tokenA.mint,
-          tokenB.mint,
+          tokenMintA.toBuffer(),
+          tokenMintB.toBuffer(),
           Buffer.from("liquidity"),
         ],
         program.programId
       );
 
       const poolAccountA = getAssociatedTokenAddressSync(
-        new PublicKey(tokenA.mint),
+        tokenMintA,
         poolAuthority,
         true,
       );
   
       const poolAccountB = getAssociatedTokenAddressSync(
-        new PublicKey(tokenB.mint),
+        tokenMintB,
         poolAuthority,
         true
       );
@@ -461,12 +469,15 @@ const useSolanaWeb3 = () => {
 
       const transaction = new Transaction();
 
-      const deposit_tx = program.instruction.depositLiquidity(
-        new anchor.BN(tokenA.amount * (10 ** tokenA.decimals)),
-        new anchor.BN(tokenB.amount * (10 ** tokenB.decimals)),
+      console.log( new anchor.BN(tokenA.amount * (10 ** tokenA.decimals)),
+      new anchor.BN(tokenB.amount * (10 ** tokenB.decimals)));
+
+      await program.rpc.depositLiquidity(
+        new anchor.BN(Number(tokenA.amount) * (10 ** tokenA.decimals)),
+        new anchor.BN(Number(tokenB.amount) * (10 ** tokenB.decimals)),
         {
           accounts: {
-            pool: new PublicKey(poolKey),
+            pool: poolKey,
             poolAuthority: poolAuthority,
             depositor: admin,
             mintLiquidity: mintLiquidity,
@@ -484,18 +495,18 @@ const useSolanaWeb3 = () => {
           }
         }
       );
-      transaction.add(deposit_tx);
+      // transaction.add(deposit_tx);
 
-      // Set the fee payer to the sender's public key
-      transaction.feePayer = publicKey;
-      // Get the recent blockhash
-      const recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
-      // Sign the transaction
-      transaction.recentBlockhash = recentBlockhash;
-      // transaction.partialSign(mint);
-      console.log("transaction->", transaction);
-      const signedTransaction = await wallet.adapter.signTransaction(transaction);
-      await connection.sendRawTransaction(signedTransaction.serialize());
+      // // Set the fee payer to the sender's public key
+      // transaction.feePayer = publicKey;
+      // // Get the recent blockhash
+      // const recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
+      // // Sign the transaction
+      // transaction.recentBlockhash = recentBlockhash;
+      // // transaction.partialSign(mint);
+      // console.log("transaction->", transaction);
+      // const signedTransaction = await wallet.adapter.signTransaction(transaction);
+      // await connection.sendRawTransaction(signedTransaction.serialize());
 
     } catch(e) {
       console.log(e);
