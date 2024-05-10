@@ -308,7 +308,7 @@
       ]
     },
     {
-      "name": "withdrawLiquidity",
+      "name": "withdrawLiquidityTokena",
       "accounts": [
         {
           "name": "amm",
@@ -354,17 +354,97 @@
           "isSigner": false
         },
         {
-          "name": "poolAccountB",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "depositorAccountLiquidity",
           "isMut": true,
           "isSigner": false
         },
         {
           "name": "depositorAccountA",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "The account paying for all rents"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Solana ecosystem accounts"
+          ]
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "withdrawLiquidityTokenb",
+      "accounts": [
+        {
+          "name": "amm",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "pool",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "poolAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "depositor",
+          "isMut": false,
+          "isSigner": true,
+          "docs": [
+            "The account paying for all rents"
+          ]
+        },
+        {
+          "name": "mintLiquidity",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mintA",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mintB",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "poolAccountB",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "depositorAccountLiquidity",
           "isMut": true,
           "isSigner": false
         },
@@ -612,6 +692,6 @@
     }
   ],
   "metadata": {
-    "address": "6Gkgg5qzdwCThP8n8aEtw54Kez6J3QPidjbkKSuUo7s8"
+    "address": "FeXjFPtkPLNWMHdkhTX3zb2pDXVP7RciJ6Cevj55nJk2"
   }
 }

@@ -5,7 +5,7 @@ import TokenSelect from "@/components/token/TokenSelect";
 import BackButton from "@/components/buttons/BackButton";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import TokenSummary from "@/components/token/TokenSummary";
 import useSolanaWeb3 from "../../hooks/useSolanaWeb3";
 import { PublicKey } from "@solana/web3.js";
@@ -26,7 +26,7 @@ const CreatePool = () => {
   const [amountA, setAmountA] = React.useState(0);
   const [amountB, setAmountB] = React.useState(0);
 
-  const { createpool, getPoolInfo } = useSolanaWeb3();
+  const { createpool, getPoolInfo, getPoolList } = useSolanaWeb3();
 
   const { toast } = useToast();
 
@@ -102,6 +102,14 @@ const CreatePool = () => {
   const handleSelectTokenB = (token: any) => {
     setSelectedTokenB(token);
   };
+
+  useEffect(() => {
+    const getPoolInfos = async() => {
+      const pools = await getPoolList();
+      console.log(pools);
+    }
+    getPoolInfos();
+  })
 
   return (
     <div className="my-6">
