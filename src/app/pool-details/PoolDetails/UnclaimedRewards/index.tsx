@@ -13,7 +13,7 @@ const UnclaimedRewards = () => {
         <div className="text-xl font-bold">Unclaimed Rewards</div>
         <div className="opacity-50">$0.0</div>
       </div>
-      <Button className="w-full bg-primary mt-2" onClick={() => claimLiquidity(address)}>Claim</Button>
+      <Button className="w-full bg-primary mt-2" onClick={() => claimLiquidity(address, 100)}>Claim</Button>
     </div>
   );
 };

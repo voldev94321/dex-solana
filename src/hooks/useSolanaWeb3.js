@@ -549,7 +549,7 @@ const useSolanaWeb3 = () => {
     }
   }
 
-  const claimLiquidity = async(poolkey) => {
+  const claimLiquidity = async(poolkey, percentage) => {
     try {
       const provider = getProvider();
       const program = new Program(idl, programID, provider);
@@ -617,7 +617,7 @@ const useSolanaWeb3 = () => {
   
       // withdraw the liquidity
       const tx1 =  program.instruction.withdrawLiquidityTokena(
-        new anchor.BN(Number(amount.value.amount)),
+        new anchor.BN(Number(amount.value.amount  * percentage / 100)),
         {
         accounts: {
           amm: ammKey,
@@ -639,7 +639,7 @@ const useSolanaWeb3 = () => {
       transaction.add(tx1);
 
       const tx2 =  program.instruction.withdrawLiquidityTokenb(
-        new anchor.BN(Number(amount.value.amount)),
+        new anchor.BN(Number(amount.value.amount) * percentage / 100),
         {
         accounts: {
           amm: ammKey,
