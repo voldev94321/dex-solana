@@ -75,7 +75,12 @@ const defaultTokens = [
   },
 ];
 
-const TokenSelect = ({ handleSelect }: any) => {
+interface TokenSelectProps {
+  token?: any;
+  handleSelect: any;
+}
+
+const TokenSelect = ({ token, handleSelect }: TokenSelectProps) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [isConfirmDlgOpen, setIsConfirmDlgOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
@@ -103,6 +108,13 @@ const TokenSelect = ({ handleSelect }: any) => {
       }
     }, 0);
   }, [wallet.connected]);
+
+  React.useEffect(() => {
+    console.log(token);
+    if(token){
+      setSelectedToken(token);
+    }
+  }, [token]);
 
   return (
     <div>

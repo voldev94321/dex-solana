@@ -33,48 +33,67 @@ const AddLiquidity = ({ tokenA, tokenB }: AddLiquidityProps) => {
   const address = searchParams ? searchParams.get("address") : "";
 
   const handleAdd = async () => {
-    if(amountA <= 0 || amountB <=0) {
-        toast({
-            title: "Token Balance is not enough",
-            description: "",
-            status: "WARNING",
-        });
-        return;
+    if (amountA <= 0 || amountB <= 0) {
+      toast({
+        title: "Token Balance is not enough",
+        description: "",
+        status: "WARNING",
+      });
+      return;
     }
     const addTokenA = {
-        mint: tokenA.mint,
-        amount: amountA,
-        decimals: 6
-    }
+      mint: tokenA.mint,
+      amount: amountA,
+      decimals: 6,
+    };
     const addTokenB = {
-        mint: tokenB.mint,
-        amount: amountB,
-        decimals: 6
+      mint: tokenB.mint,
+      amount: amountB,
+      decimals: 6,
+    };
+    const result = await addTokenLiquidity(addTokenA, addTokenB, address);
+    if (!result) {
+      toast({
+        title: "Liquidity added!",
+        description: "",
+        status: "SUCCESS",
+      });
+      fetchData();
+    } else if (result.status == "ERROR") {
+      toast({
+        title: "Adding Liquidity Failed!",
+        description: "",
+        status: "ERROR",
+      });
     }
-    const result = await addTokenLiquidity( addTokenA, addTokenB, address);
-
     console.log(tokenA, tokenBalanceA);
+  };
+
+  const fetchData = async () => {
+    if (publicKey) {
+      const tokenAccounts = await getTokenAccounts(
+        publicKey.toBase58(),
+        solanaConnection
+      );
+      const tokenAccountAIndex = tokenAccounts.findIndex((ta: any) => {
+        return ta.mint == tokenA.mint;
+      });
+      if (tokenAccountAIndex != -1) {
+        setTokenBalanceA(tokenAccounts[tokenAccountAIndex].tokenBalance);
+      }
+      const tokenAccountBIndex = tokenAccounts.findIndex((ta: any) => {
+        return ta.mint == tokenB.mint;
+      });
+      if (tokenAccountBIndex != -1) {
+        setTokenBalanceB(tokenAccounts[tokenAccountBIndex].tokenBalance);
+      }
+    }
   };
 
   React.useEffect(() => {
     setTimeout(async () => {
       if (publicKey && tokenA && tokenB) {
-        const tokenAccounts = await getTokenAccounts(
-          publicKey.toBase58(),
-          solanaConnection
-        );
-        const tokenAccountAIndex = tokenAccounts.findIndex((ta: any) => {
-          return ta.mint == tokenA.mint;
-        });
-        if (tokenAccountAIndex != -1) {
-          setTokenBalanceA(tokenAccounts[tokenAccountAIndex].tokenBalance);
-        }
-        const tokenAccountBIndex = tokenAccounts.findIndex((ta: any) => {
-          return ta.mint == tokenB.mint;
-        });
-        if (tokenAccountBIndex != -1) {
-          setTokenBalanceB(tokenAccounts[tokenAccountBIndex].tokenBalance);
-        }
+        await fetchData();
       }
     }, 0);
   }, [publicKey, tokenA, tokenB]);

@@ -1,5 +1,16 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 "use client";
+
+import { getTokenAccounts, getTokenMetadata } from "@/apis/token";
+import useSolanaWeb3 from "@/hooks/useSolanaWeb3";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { Connection } from "@solana/web3.js";
+import { useRouter } from "next/navigation";
+import React from "react";
+
+const rpcEndpoint = `https://api.devnet.solana.com `;
+const solanaConnection = new Connection(rpcEndpoint);
 
 const TableHeaders = [
   "TVL",
@@ -63,6 +74,47 @@ const TableData = [
 ];
 
 const AllPools = () => {
+  const { getPoolList } = useSolanaWeb3();
+  const { connected, publicKey } = useWallet();
+  const [poolList, setPoolList] = React.useState<any>([]);
+  const router = useRouter();
+
+  const handleClick = ( poolKey: any ) => {
+    // console.log(poolKey);
+    router.push("/pool-details?address=" + poolKey);
+  }
+
+  React.useEffect(() => {
+    if (connected && publicKey) {
+      setTimeout(async () => {
+        const list = await getPoolList();
+        if (!list) {
+          return;
+        }
+
+        const tempPoolList = [];
+        for (let i = 0; i < list.length; i++) {
+          const tokenAMint = list[i].tokenMintA;
+          const tokenBMint = list[i].tokenMintB;
+          const tokenA = await getTokenMetadata(
+            tokenAMint.toBase58(),
+          );
+          const tokenB = await getTokenMetadata(
+            tokenBMint.toBase58(),
+          );
+          tempPoolList.push({
+            poolKey: list[i].poolKey,
+            tokenA,
+            tokenB,
+          });
+          // console.log("tempPoolList", tempPoolList);
+          setPoolList(tempPoolList);
+        }
+        // console.log(list);
+      }, 0);
+    }
+  }, [connected]);
+
   return (
     <div className="bg-white rounded-lg w-full p-8 mt-6">
       <div className="text-xl">
@@ -73,40 +125,35 @@ const AllPools = () => {
           <tr>
             <th className="text-left text-gray-400 pl-4">Name</th>
             {TableHeaders.map((item, index) => (
-              <th key={item} className="text-left text-gray-400 py-4">
+              <th key={index} className="text-left text-gray-400 py-4">
                 {item}
               </th>
             ))}
           </tr>
         </thead>
         <tbody className="">
-          {TableData.map((item, index) => (
-            <tr
-              key={item.tokens[0].name + item.tokens[1].name}
-              className="hover:bg-gray-100 hover:rounded-lg"
-            >
+          {poolList.map((item: any, index: number) => (
+            <tr key={index} className="hover:bg-gray-100 hover:rounded-lg cursor-pointer" onClick={() => {handleClick(item.poolKey)}}>
               <td className="flex py-4 pl-4">
                 <img
-                  key={index}
                   alt="token"
-                  src={item.tokens[0].image}
+                  src={item.tokenA.offchainMetadata.image}
                   className="w-6 h-6 rounded-full"
                 />
                 <img
-                  key={index}
                   alt="token"
-                  src={item.tokens[1].image}
+                  src={item.tokenB.offchainMetadata.image}
                   className="w-6 h-6 rounded-full -ml-2"
                 />
                 <div className="ml-2">
-                  {item.tokens[0].name} / {item.tokens[1].name}
+                  {item.tokenA.symbol} / {item.tokenB.symbol}
                 </div>
               </td>
-              <td>${item.tvl}</td>
-              <td>${item.dailyVolume}</td>
-              <td>${item.weeklyVolume}</td>
-              <td>${item.fees}</td>
-              <td>${item.APR}</td>
+              <td>$0</td>
+              <td>$0</td>
+              <td>$0</td>
+              <td>$0</td>
+              <td>$0%</td>
               <td>{`->`}</td>
             </tr>
           ))}

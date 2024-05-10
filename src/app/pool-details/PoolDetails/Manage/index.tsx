@@ -8,11 +8,12 @@ import RemoveLiquidity from "./RemoveLiquidity";
 const tabs = ["Add", "Remove", "Fees"];
 
 interface ManageProps {
+  poolKey: any;
   tokenA: any;
   tokenB: any;
 }
 
-const Manage = ({ tokenA, tokenB }: ManageProps) => {
+const Manage = ({ poolKey, tokenA, tokenB }: ManageProps) => {
   const [selectedTab, setSelectedTab] = React.useState(0);
 
   return (
@@ -27,7 +28,7 @@ const Manage = ({ tokenA, tokenB }: ManageProps) => {
       </div>
       <div className="mt-4">
         {selectedTab == 0 && <AddLiquidity tokenA={tokenA} tokenB={tokenB} />}
-        {selectedTab == 1 && <RemoveLiquidity />}
+        {selectedTab == 1 && <RemoveLiquidity poolKey={poolKey} tokenA={tokenA} tokenB={tokenB}/>}
       </div>
     </div>
   );

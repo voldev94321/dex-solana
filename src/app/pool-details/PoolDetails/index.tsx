@@ -20,15 +20,17 @@ const PoolDetails = () => {
   const { getPoolInfo } = useSolanaWeb3();
   const { connected } = useWallet();
   const address = searchParams ? searchParams.get("address") : "";
-  const [tokenA, setTokenA] = React.useState<any>({});
-  const [tokenB, setTokenB] = React.useState<any>({});
+  const [tokenA, setTokenA] = React.useState<any>(null);
+  const [tokenB, setTokenB] = React.useState<any>(null);
+  const [poolInformation, setPoolInformation] = React.useState<any>(null);
 
   React.useEffect(() => {
     if (address && connected) {
       setTimeout(async () => {
         // console.log(address);
         const poolInformation = await getPoolInfo(address);
-        // console.log(poolInformation);
+        console.log( "poolInfo", poolInformation);
+        setPoolInformation(poolInformation);
 
         setTokenA(await getTokenMetadata(poolInformation?.tokenMintA));
         setTokenB(await getTokenMetadata(poolInformation?.tokenMintB));
@@ -42,13 +44,13 @@ const PoolDetails = () => {
     // console.log(tokenA, tokenB);
   }, [tokenA, tokenB]);
 
-  return (
+  return tokenA && tokenB && (
     <div className="px-36 mt-4">
       <div>
         Home <span className="text-gray-400">{`> ${address}`}</span>
       </div>
       <BackButton />
-      {tokenA.mint != undefined && tokenB.mint != undefined && <div className="flex mt-4 items-center">
+      {tokenA && tokenB && tokenA.mint != undefined && tokenB.mint != undefined && <div className="flex mt-4 items-center">
         <img
           alt="token"
           src={tokenA.offchainMetadata.image}
@@ -82,9 +84,9 @@ const PoolDetails = () => {
         </div>
       </div>
       <div className="grid grid-cols-2 mt-6 gap-4">
-        <Manage tokenA={tokenA} tokenB={tokenB}/>
+        <Manage poolKey={address} tokenA={tokenA} tokenB={tokenB}/>
         <div>
-          <PositionDetails />
+          <PositionDetails tokenA={tokenA} tokenB={tokenB} poolInfo={poolInformation}/>
           <UnclaimedRewards />
         </div>
       </div>

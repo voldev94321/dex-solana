@@ -232,7 +232,7 @@ const useSolanaWeb3 = () => {
     }
   };
 
-  const swap = async() => {
+  const swap = async(poolkey,tokenA, tokenB, amount) => {
     try {
       if (!connected) {
         console.error('Wallet is not connected');
@@ -248,16 +248,23 @@ const useSolanaWeb3 = () => {
         ],
         program.programId
       );
-
-      // get the all pools
-      const pools = await program.account.globalState.fetch(globalState);
-      // target pool
-      const targetPool = pools.pools[1];
+      const targetPool = poolkey;
       // get pool information
       const poolInformation = await program.account.pool.fetch(targetPool);
       const ammKey = poolInformation.amm;
       const tokenMintA = poolInformation.mintA;
       const tokenMintB = poolInformation.mintB;
+      let flag = true;
+
+      if(tokenMintA.toString() == tokenA && tokenMintB.toString() == tokenB) {
+        flag = true;
+      } else if (tokenMintA.toString() == tokenB && tokenMintB.toString() == tokenA) {
+        flag = false
+      } else {
+        console.log("wrong token B address");
+        return
+      }
+    
       // call the swap function
       const [poolAuthority,_2] = await anchor.web3.PublicKey.findProgramAddress(
         [
@@ -292,10 +299,10 @@ const useSolanaWeb3 = () => {
         admin,
       );
 
-      const input = new anchor.BN(20 * 10 ** 6);
+      const input = new anchor.BN(Number(amount) * 10 ** 6);
       // "Swap from A to B"
       const tx = await program.rpc.swapExactTokensForTokens(
-        true,
+        flag,
         input,
         new anchor.BN(100), {
           accounts:{
@@ -319,6 +326,10 @@ const useSolanaWeb3 = () => {
 
     } catch (error) {
       console.log(error);
+      return {
+        status: "ERROR",
+        msg: "Something wrong"
+      }
     }
    
   }
@@ -671,6 +682,10 @@ const useSolanaWeb3 = () => {
       await connection.sendRawTransaction(signedTransaction.serialize());
     } catch (error) {
       console.log(error);
+      return {
+        status: "ERROR",
+        msg: "Something wrong"
+      }
     }
   }
 

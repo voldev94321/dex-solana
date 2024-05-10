@@ -1,5 +1,6 @@
 'use client';
 
+import { abbreviateTokenAddress } from "@/lib/utils";
 import Link from "next/link";
 import { BsBoxArrowUpRight } from "react-icons/bs";
 
@@ -9,7 +10,7 @@ interface TokenLinkProps {
 
 const TokenLink = ( { tokenAddress }: TokenLinkProps ) => {
     return <Link href="#" className="flex gap-2 items-center text-primary">
-    Es9vMF...enwNYB <BsBoxArrowUpRight />
+    {abbreviateTokenAddress(tokenAddress)} <BsBoxArrowUpRight />
   </Link>;
 }
 
