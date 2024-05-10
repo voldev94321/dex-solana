@@ -13,7 +13,7 @@ import { FaCopy } from "react-icons/fa";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { useSelector } from "react-redux";
-import { getTokenList } from "@/apis/token";
+import { getTokenAccounts, getTokenList } from "@/apis/token";
 import { useWallet } from "@solana/wallet-adapter-react";
 import {
   Connection,
@@ -85,55 +85,6 @@ const TokenSelect = ({ handleSelect }: any) => {
 
   const [selectedToken, setSelectedToken] = React.useState<any>({});
 
-  async function getTokenAccounts(
-    wallet: string,
-    solanaConnection: Connection
-  ) {
-    // console.log(wallet, solanaConnection);
-    const filters: GetProgramAccountsFilter[] = [
-      {
-        dataSize: 165, //size of account (bytes)
-      },
-      {
-        memcmp: {
-          offset: 32, //location of our query in the account (bytes)
-          bytes: wallet, //our search criteria, a base58 encoded string
-        },
-      },
-    ];
-    const accounts = await solanaConnection.getParsedProgramAccounts(
-      TOKEN_PROGRAM_ID, //new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
-      { filters: filters }
-    );
-    // console.log(
-    //   `Found ${accounts.length} token account(s) for wallet ${wallet}.`
-    // );
-    let tokenArray: any = [];
-    for (let i = 0; i < accounts.length; i++) {
-      const account = accounts[i];
-      //Parse the account data
-      const parsedAccountInfo: any = account.account.data;
-      const mintAddress: string = parsedAccountInfo["parsed"]["info"]["mint"];
-      // console.log("#!#!#!#", parsedAccountInfo);
-      const tokenBalance: number =
-        parsedAccountInfo["parsed"]["info"]["tokenAmount"]["uiAmount"];
-      const tokenDecimals: number =
-        parsedAccountInfo["parsed"]["info"]["tokenAmount"]["decimals"];
-      //Log results
-      // console.log(`Token Account No. ${i + 1}: ${account.pubkey.toString()}`);
-      // console.log(`--Token Mint: ${mintAddress}`);
-      // console.log(`--Token Balance: ${tokenBalance}`);
-      // console.log(await getTokenMetadata(mintAddress));
-      const tokenMetadata = await getTokenMetadata(mintAddress);
-      if(tokenMetadata) {
-        tokenArray.push({...await getTokenMetadata(mintAddress), tokenBalance, tokenDecimals});
-      }
-    }
-
-    // console.log(tokenArray);
-    setTokens(tokenArray);
-  }
-
   const handleKeyDown = (e: any) => {
     if (e.key == "Enter") {
       e.preventDefault();
@@ -143,9 +94,14 @@ const TokenSelect = ({ handleSelect }: any) => {
 
   React.useEffect(() => {
     // console.log(wallet);
-    if (wallet.connected && wallet.publicKey) {
-      getTokenAccounts(wallet.publicKey.toString(), solanaConnection);
-    }
+
+    setTimeout(async () => {
+      if (wallet.connected && wallet.publicKey) {
+        setTokens(
+          await getTokenAccounts(wallet.publicKey.toString(), solanaConnection)
+        );
+      }
+    }, 0);
   }, [wallet.connected]);
 
   return (
@@ -158,15 +114,19 @@ const TokenSelect = ({ handleSelect }: any) => {
               setIsDialogOpen(true);
             }}
           >
-            {selectedToken.offchainMetadata ? <img
-              src={
-                selectedToken.offchainMetadata == undefined
-                  ? ""
-                  : selectedToken.offchainMetadata.image
-              }
-              alt="tether"
-              className="w-5 h-5"
-            /> : <div className="w-5 h-5"></div>}
+            {selectedToken.offchainMetadata ? (
+              <img
+                src={
+                  selectedToken.offchainMetadata == undefined
+                    ? ""
+                    : selectedToken.offchainMetadata.image
+                }
+                alt="tether"
+                className="w-5 h-5"
+              />
+            ) : (
+              <div className="w-5 h-5"></div>
+            )}
             <div>
               {selectedToken.symbol == undefined ? "" : selectedToken.symbol}
             </div>

@@ -89,10 +89,10 @@ const CreatePool = () => {
 
     // console.log(tokenMintA, tokenMintB, depositAmountA, depositAmountB);
     const poolkey = await createpool(tokenMintA, tokenMintB, depositAmountA, depositAmountB);
-    console.log("poolkey->", poolkey);
-    const poolInformation = await getPoolInfo(poolkey);
-    console.log("poolInformation->", poolInformation);
-    // router.push("/pool-details");
+    // console.log("poolkey->", poolkey);
+    // const poolInformation = await getPoolInfo(poolkey);
+    // console.log("poolInformation->", poolInformation);
+    router.push("/pool-details?address=" + poolkey);
   };
 
   const handleSelectTokenA = (token: any) => {

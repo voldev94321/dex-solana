@@ -395,10 +395,122 @@ const useSolanaWeb3 = () => {
       console.log(error);
     }
   }
+
+  const addTokenLiquidity = async(tokenA, tokenB, poolKey) => {
+    console.log(tokenA, tokenB, poolKey);
+    try {
+      const provider = getProvider();
+      const program = new Program(idl, programID, provider);
+      const admin = publicKey;
+
+      const id = Keypair.generate().publicKey;
+
+      const [ammKey, _] = await anchor.web3.PublicKey.findProgramAddress(
+        [
+          id.toBuffer()
+        ],
+        program.programId
+      );
+
+      const [ poolAuthority, _3] = await anchor.web3.PublicKey.findProgramAddress(
+        [
+          ammKey.toBuffer(),
+          tokenA.mint,
+          tokenB.mint,
+          Buffer.from("authority"),
+        ],
+        program.programId
+      );
+
+      const [mintLiquidity, _4] = await anchor.web3.PublicKey.findProgramAddress(
+        [
+          ammKey.toBuffer(),
+          tokenA.mint,
+          tokenB.mint,
+          Buffer.from("liquidity"),
+        ],
+        program.programId
+      );
+
+      const poolAccountA = getAssociatedTokenAddressSync(
+        new PublicKey(tokenA.mint),
+        poolAuthority,
+        true,
+      );
+  
+      const poolAccountB = getAssociatedTokenAddressSync(
+        new PublicKey(tokenB.mint),
+        poolAuthority,
+        true
+      );
+
+      const liquidityAccount = getAssociatedTokenAddressSync(
+        mintLiquidity,
+        admin,
+      );
+  
+      const holderAccountA = getAssociatedTokenAddressSync(
+        new PublicKey(tokenA.mint),
+        admin,
+      );
+  
+      const holderAccountB = getAssociatedTokenAddressSync(
+        new PublicKey(tokenB.mint),
+        admin,
+      );
+
+      const transaction = new Transaction();
+
+      const deposit_tx = program.instruction.depositLiquidity(
+        new anchor.BN(tokenA.amount * (10 ** tokenA.decimals)),
+        new anchor.BN(tokenB.amount * (10 ** tokenB.decimals)),
+        {
+          accounts: {
+            pool: new PublicKey(poolKey),
+            poolAuthority: poolAuthority,
+            depositor: admin,
+            mintLiquidity: mintLiquidity,
+            mintA: new PublicKey(tokenA.mint),
+            mintB: new PublicKey(tokenB.mint),
+            poolAccountA: poolAccountA,
+            poolAccountB: poolAccountB,
+            depositorAccountLiquidity: liquidityAccount,
+            depositorAccountA: holderAccountA,
+            depositorAccountB: holderAccountB,
+            payer: admin,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            associatedTokenProgram : ASSOCIATED_TOKEN_PROGRAM_ID,
+            systemProgram: SystemProgram.programId
+          }
+        }
+      );
+      transaction.add(deposit_tx);
+
+      // Set the fee payer to the sender's public key
+      transaction.feePayer = publicKey;
+      // Get the recent blockhash
+      const recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
+      // Sign the transaction
+      transaction.recentBlockhash = recentBlockhash;
+      // transaction.partialSign(mint);
+      console.log("transaction->", transaction);
+      const signedTransaction = await wallet.adapter.signTransaction(transaction);
+      await connection.sendRawTransaction(signedTransaction.serialize());
+
+    } catch(e) {
+      console.log(e);
+      return {
+        status: "ERROR",
+        msg: "Something wrong"
+      }
+    }
+  }
+
   return {
     createpool,
     swap,
-    getPoolInfo
+    getPoolInfo,
+    addTokenLiquidity
   };
 };
 
