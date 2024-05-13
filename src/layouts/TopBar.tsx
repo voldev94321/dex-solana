@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import WalletConnection from "@/components/wallet/WalletConnection";
 import { TOKEN_ADDRESSES } from "@/constants/token";
 import { setTokenList } from "@/store/appSlice";
+import Link from "next/link";
 import React from "react";
 import { GoQuestion } from "react-icons/go";
 import { IoMdSettings } from "react-icons/io";
@@ -105,8 +106,12 @@ const TopBar = () => {
 
   return (
     <div className="flex items-center justify-between px-6 border-b-2 border-gray-200">
-      <div className="text-3xl my-6">
-        <b>DEX</b>
+      <div className="flex my-6 gap-6">
+        <div className="text-3xl font-bold items-center">DEX</div>
+        <div className="flex items-center gap-4">
+          <Link href="/swap" className="text-lg font-semibold">Swap</Link>
+          <Link href="/dashboard" className="text-lg font-semibold">Provide Liquidity</Link>
+        </div>
       </div>
       <div className="flex items-center gap-4" id="setting-dialog">
         <Dialog open={isSettingModal} onOpenChange={setIsSettingModal}>
