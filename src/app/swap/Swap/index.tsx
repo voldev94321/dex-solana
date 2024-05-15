@@ -90,6 +90,10 @@ const Swap = () => {
     setTokenBAmount(tokenA.tokenBalance * price)
   }
 
+  const handleRefresh = () => {
+    fetchData();
+  }
+
   React.useEffect(() => {
     if (tokenA && tokenB) {
       fetchData();
@@ -100,7 +104,7 @@ const Swap = () => {
     <div className="max-w-[500px] mt-12 m-auto">
       <div className="text-2xl font-bold">Swap</div>
       <div className="flex justify-between mt-4 items-center">
-        <div className="bg-gray-200 p-3 rounded-md">
+        <div className="bg-gray-200 p-3 rounded-md cursor-pointer" onClick={handleRefresh}>
           <SlRefresh className="w-4 h-4 " />
         </div>
         <div className="flex gap-2">

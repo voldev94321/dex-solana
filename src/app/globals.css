@@ -5,6 +5,11 @@
 body {
   background: #f6f6f6;
   color: black;
+  font-family: 'tasa', sans-serif !important;
+}
+
+.text-2xl {
+  font-family: 'tasa-deck', sans-serif !important;
 }
 
 ::-webkit-scrollbar {
@@ -28,4 +33,25 @@ body {
     -webkit-appearance: none;
     margin: 0;
   }
+}
+
+@font-face {
+  font-family: "tasa";
+  src: url("/fonts/TASAOrbiterText-Medium.otf") format("opentype"); /* Modern Browsers */
+  /* Add more src lines for different font file formats if needed */
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "tasa-deck";
+  src: url("/fonts/TASAOrbiterDeck-Medium.otf") format("opentype"); /* Modern Browsers */
+  /* Add more src lines for different font file formats if needed */
+  font-weight: normal;
+  font-style: normal;
+}
+
+.text-nav {
+  font-size: 16px;
+  font-weight: 500;
 }

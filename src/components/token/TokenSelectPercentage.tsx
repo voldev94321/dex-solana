@@ -19,7 +19,7 @@ const TokenSelectPercentage = ({
       <div className="flex justify-between items-center my-8">
         <div className="text-3xl flex">
           <TransparentInput
-            classNames="text-right max-w-14"
+            classNames="w-fit"
             placeholder="0"
             type="number"
             max={100}

@@ -49,8 +49,8 @@ const PoolDetails = () => {
       <div>
         Home <span className="text-gray-400">{`> ${address}`}</span>
       </div>
-      <BackButton />
-      {tokenA && tokenB && tokenA.mint != undefined && tokenB.mint != undefined && <div className="flex mt-4 items-center">
+      <div className="mt-8"><BackButton /></div>
+      {tokenA && tokenB && tokenA.mint != undefined && tokenB.mint != undefined && <div className="flex mt-6 items-center">
         <img
           alt="token"
           src={tokenA.offchainMetadata.image}

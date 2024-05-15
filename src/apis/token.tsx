@@ -21,7 +21,7 @@ export async function getTokenMetadata(tokenMint: string) {
       const uri = metadata.uri;
       const fetchResponse = await fetch(uri);
       const offchainMetadata = await fetchResponse.json();
-      console.log("offchainMetadata->", offchainMetadata);
+      console.log("offchainMetadata->", offchainMetadata, metadata);
       return { ...metadata, offchainMetadata };
     }
   } catch (error) {

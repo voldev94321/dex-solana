@@ -88,7 +88,7 @@ const MyPositions = () => {
           ))}
         </tbody>
       </table>
-      <div className="w-full flex justify-end">
+      <div className="w-full flex justify-end mt-10">
         <Pagination/>
       </div>
     </div>

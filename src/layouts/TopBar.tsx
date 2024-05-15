@@ -109,8 +109,8 @@ const TopBar = () => {
       <div className="flex my-6 gap-6">
         <div className="text-3xl font-bold items-center">DEX</div>
         <div className="flex items-center gap-4">
-          <Link href="/swap" className="text-lg font-semibold">Swap</Link>
-          <Link href="/dashboard" className="text-lg font-semibold">Provide Liquidity</Link>
+          <Link href="/swap" className="text-nav font-semibold">Swap</Link>
+          <Link href="/dashboard" className="text-nav font-semibold">Provide Liquidity</Link>
         </div>
       </div>
       <div className="flex items-center gap-4" id="setting-dialog">

@@ -31,9 +31,12 @@ const solanaConnection = new Connection(rpcEndpoint);
 const defaultTokens = [
   {
     coingeckoId: "solana",
-    decimals: 9,
-    logoURI:
+    tokenDecimals: 9,
+    tokenBalance: 0.0,
+    offchainMetadata: {
+      image:
       "https://cdn.jsdelivr.net/gh/saber-hq/spl-token-icons@master/icons/101/So11111111111111111111111111111111111111112.png",
+    },
     mint: "So11111111111111111111111111111111111111112",
     name: "Solana",
     poolToken: false,
@@ -42,9 +45,12 @@ const defaultTokens = [
   },
   {
     coingeckoId: "ninja-protocol",
-    decimals: 6,
-    logoURI:
+    tokenDecimals: 6,
+    tokenBalance: 0.0,
+    offchainMetadata: {
+      image:
       "https://assets.coingecko.com/coins/images/18442/large/ninja.PNG?1632006127",
+    },
     mint: "FgX1WD9WzMU3yLwXaFSarPfkgzjLb2DZCqmkx9ExpuvJ",
     name: "Ninja Protocol",
     poolToken: false,
@@ -53,9 +59,12 @@ const defaultTokens = [
   },
   {
     coingeckoId: "tether",
-    decimals: 6,
-    logoURI:
+    tokenDecimals: 6,
+    tokenBalance: 0.0,
+    offchainMetadata: {
+      image:
       "https://cdn.jsdelivr.net/gh/saber-hq/spl-token-icons@master/icons/101/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB.svg",
+    },
     mint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
     name: "Tether",
     poolToken: false,
@@ -64,9 +73,12 @@ const defaultTokens = [
   },
   {
     coingeckoId: "usd-coin",
-    decimals: 6,
-    logoURI:
+    tokenDecimals: 6,
+    tokenBalance: 0.0,
+    offchainMetadata: {
+      image:
       "https://s3.coinmarketcap.com/static-gravity/image/5a8229787b5e4c809b5914eef709b59a.png",
+    },
     mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
     name: "USD Coin",
     poolToken: false,
@@ -84,7 +96,7 @@ const TokenSelect = ({ token, handleSelect }: TokenSelectProps) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [isConfirmDlgOpen, setIsConfirmDlgOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
-  const [tokens, setTokens] = React.useState<any[]>([]);
+  const [tokens, setTokens] = React.useState<any[]>(defaultTokens);
   // const { tokenList } = useSelector((state: any) => state.app);
   const wallet = useWallet();
 
@@ -103,7 +115,7 @@ const TokenSelect = ({ token, handleSelect }: TokenSelectProps) => {
     setTimeout(async () => {
       if (wallet.connected && wallet.publicKey) {
         setTokens(
-          await getTokenAccounts(wallet.publicKey.toString(), solanaConnection)
+          [...defaultTokens, ...await getTokenAccounts(wallet.publicKey.toString(), solanaConnection)]
         );
       }
     }, 0);
@@ -203,9 +215,13 @@ const TokenSelect = ({ token, handleSelect }: TokenSelectProps) => {
               <div
                 key={token.symbol}
                 className="flex gap-2 items-center bg-gray-50 border-2 border-gray-100 rounded-lg p-2 cursor-pointer"
+                onClick={() => {
+                  handleSelect(token), setSelectedToken(token);
+                  setIsDialogOpen(false);
+                }}
               >
                 <img
-                  src={token.logoURI}
+                  src={token.offchainMetadata.image}
                   alt="token"
                   className="w-6 h-6 rounded-full"
                 />

@@ -48,8 +48,7 @@ const PositionDetails = ({tokenA, tokenB, poolInfo}: PositionDetailsProps) => {
         <div>
           <div>Min Price</div>
           <div className="text-gray-400 text-sm mt-2">
-            Your position will be 100% <br />
-            USDT at this price
+            Your position will be 100% USDT at this price
           </div>
         </div>
         <div className="text-2xl">0</div>
@@ -58,8 +57,7 @@ const PositionDetails = ({tokenA, tokenB, poolInfo}: PositionDetailsProps) => {
         <div>
           <div>Max Price</div>
           <div className="text-gray-400 text-sm mt-2">
-            Your position will be 100% <br />
-            USDT at this price
+            Your position will be 100% USDT at this price
           </div>
         </div>
 
