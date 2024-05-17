@@ -11,7 +11,7 @@ import {
   SYSVAR_CLOCK_PUBKEY,
   Keypair
 } from '@solana/web3.js';
-import { TOKEN_PROGRAM_ID,ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress,getAssociatedTokenAddressSync, createTransferInstruction, getAccountTypeOfMintType, createAssociatedTokenAccount, createAssociatedTokenAccountInstruction } from '@solana/spl-token';
+import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, getAssociatedTokenAddressSync, createTransferInstruction, getAccountTypeOfMintType, createAssociatedTokenAccount, createAssociatedTokenAccountInstruction } from '@solana/spl-token';
 import idl from "../app/IDL/dex.json";
 
 import * as anchor from "@project-serum/anchor";
@@ -21,16 +21,16 @@ import { Buffer } from 'buffer';
 
 // window.Buffer = Buffer;
 const opts = {
-  preflightCommitment:"processed",
+  preflightCommitment: "processed",
 };
 
-const RPC_URL = `https://api.devnet.solana.com `;
-const connection = new Connection(RPC_URL,'confirmed');
+const RPC_URL = `https://devnet.helius-rpc.com/?api-key=`;
+const connection = new Connection(RPC_URL, 'confirmed');
 const programID = new PublicKey(idl.metadata.address);
 
 const useSolanaWeb3 = () => {
   // const { wallet, connected } = useWallet();
-  const { select, wallets, publicKey, disconnect, connected,connecting, wallet } = useWallet();
+  const { select, wallets, publicKey, disconnect, connected, connecting, wallet } = useWallet();
 
   const getProvider = () => {
     const provider = new AnchorProvider(
@@ -42,12 +42,12 @@ const useSolanaWeb3 = () => {
   };
 
   const createpool = async (tokenMintA, tokenMintB, depositAmountA, depositAmountB) => {
-    try{
+    try {
       if (!connected) {
         console.error('Wallet is not connected');
         return;
       }
-  
+
       const provider = getProvider();
       const program = new Program(idl, programID, provider);
       // create amm
@@ -59,18 +59,18 @@ const useSolanaWeb3 = () => {
         ],
         program.programId
       );
-  
-      if(new anchor.BN(tokenMintB.toBytes()).lt(new anchor.BN(tokenMintA.toBytes()))){
+
+      if (new anchor.BN(tokenMintB.toBytes()).lt(new anchor.BN(tokenMintA.toBytes()))) {
         let temp = tokenMintB;
         tokenMintB = tokenMintA;
         tokenMintA = temp;
-  
+
         let temp_amount = depositAmountB;
         depositAmountB = depositAmountA;
         depositAmountA = temp_amount;
       }
-  
-      const [poolAuthority,_3] = await anchor.web3.PublicKey.findProgramAddress(
+
+      const [poolAuthority, _3] = await anchor.web3.PublicKey.findProgramAddress(
         [
           ammKey.toBuffer(),
           tokenMintA.toBuffer(),
@@ -79,7 +79,7 @@ const useSolanaWeb3 = () => {
         ],
         program.programId
       );
-  
+
       const [mintLiquidity, _4] = await anchor.web3.PublicKey.findProgramAddress(
         [
           ammKey.toBuffer(),
@@ -89,8 +89,8 @@ const useSolanaWeb3 = () => {
         ],
         program.programId
       );
-  
-      const [poolKey,_5] = await anchor.web3.PublicKey.findProgramAddress(
+
+      const [poolKey, _5] = await anchor.web3.PublicKey.findProgramAddress(
         [
           ammKey.toBuffer(),
           tokenMintA.toBuffer(),
@@ -98,54 +98,54 @@ const useSolanaWeb3 = () => {
         ],
         program.programId
       );
-  
+
       const poolAccountA = getAssociatedTokenAddressSync(
         tokenMintA,
         poolAuthority,
         true,
       );
-  
+
       const poolAccountB = getAssociatedTokenAddressSync(
         tokenMintB,
         poolAuthority,
         true
       );
-  
+
       const liquidityAccount = getAssociatedTokenAddressSync(
         mintLiquidity,
         admin,
       );
-  
+
       const holderAccountA = getAssociatedTokenAddressSync(
         tokenMintA,
         admin,
       );
-  
+
       const holderAccountB = getAssociatedTokenAddressSync(
         tokenMintB,
         admin,
       );
-  
+
       const minimumLiquidity = new anchor.BN(100);
       const defaultSupply = new anchor.BN(100 * 10 ** 6);
-  
+
       const transaction = new Transaction();
-      
+
       const [globalState, _2] = await anchor.web3.PublicKey.findProgramAddress(
         [
-            Buffer.from("global-state")
+          Buffer.from("global-state")
         ],
         program.programId
       );
-  
+
       const fee = 500;
-  
+
       const tx = program.instruction.createAmm(
         id,
         fee,
         {
           accounts: {
-            amm: ammKey, 
+            amm: ammKey,
             admin: admin,
             payer: admin,
             systemProgram: SystemProgram.programId
@@ -153,7 +153,7 @@ const useSolanaWeb3 = () => {
         }
       );
       transaction.add(tx);
-        
+
       const pool_tx = program.instruction.createPool(
         {
           accounts: {
@@ -164,7 +164,7 @@ const useSolanaWeb3 = () => {
             mintA: tokenMintA,
             mintB: tokenMintB,
             tokenProgram: TOKEN_PROGRAM_ID,
-            associatedTokenProgram : ASSOCIATED_TOKEN_PROGRAM_ID,
+            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
             systemProgram: SystemProgram.programId
           }
         }
@@ -183,7 +183,7 @@ const useSolanaWeb3 = () => {
             poolAccountA: poolAccountA,
             poolAccountB: poolAccountB,
             tokenProgram: TOKEN_PROGRAM_ID,
-            associatedTokenProgram : ASSOCIATED_TOKEN_PROGRAM_ID,
+            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
             systemProgram: SystemProgram.programId
           }
         }
@@ -208,13 +208,13 @@ const useSolanaWeb3 = () => {
             depositorAccountB: holderAccountB,
             payer: admin,
             tokenProgram: TOKEN_PROGRAM_ID,
-            associatedTokenProgram : ASSOCIATED_TOKEN_PROGRAM_ID,
+            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
             systemProgram: SystemProgram.programId
           }
         }
       );
       transaction.add(deposit_tx);
-  
+
       // Set the fee payer to the sender's public key
       transaction.feePayer = publicKey;
       // Get the recent blockhash
@@ -222,29 +222,44 @@ const useSolanaWeb3 = () => {
       // Sign the transaction
       transaction.recentBlockhash = recentBlockhash;
       // transaction.partialSign(mint);
+      console.log( wallet.adapter);
       const signedTransaction = await wallet.adapter.signTransaction(transaction);
       await connection.sendRawTransaction(signedTransaction.serialize());
 
+      // let listenerId;
+      // const event = await new Promise(async (res) => {
+      //   listenerId = program.addEventListener("DepositLiquidityEvent", (event) => {
+      //     console.log("event->", event);
+      //     res(event);
+      //   });
+      //   console.log("signedTransaction->", signedTransaction);
+        await connection.sendRawTransaction(signedTransaction.serialize());
+      // });
+      // await program.removeEventListener(listenerId);
+
+      const poolInformation = await getPoolInfo(poolKey);
+      console.log("poolInformation->", poolInformation);
+
       return poolKey;
-    } catch(err){
+    } catch (err) {
       console.log('err in usesolanaweb3', err)
       throw err;
     }
   };
 
-  const swap = async(poolkey,tokenA, tokenB, amount) => {
+  const swap = async (poolkey, tokenA, tokenB, amount) => {
     try {
       if (!connected) {
         console.error('Wallet is not connected');
         return;
       }
-  
+
       const provider = getProvider();
       const program = new Program(idl, programID, provider);
 
       const [globalState, _1] = await anchor.web3.PublicKey.findProgramAddress(
         [
-            Buffer.from("global-state")
+          Buffer.from("global-state")
         ],
         program.programId
       );
@@ -256,7 +271,7 @@ const useSolanaWeb3 = () => {
       const tokenMintB = poolInformation.mintB;
       let flag = true;
 
-      if(tokenMintA.toString() == tokenA && tokenMintB.toString() == tokenB) {
+      if (tokenMintA.toString() == tokenA && tokenMintB.toString() == tokenB) {
         flag = true;
       } else if (tokenMintA.toString() == tokenB && tokenMintB.toString() == tokenA) {
         flag = false
@@ -264,9 +279,9 @@ const useSolanaWeb3 = () => {
         console.log("wrong token B address");
         return
       }
-    
+
       // call the swap function
-      const [poolAuthority,_2] = await anchor.web3.PublicKey.findProgramAddress(
+      const [poolAuthority, _2] = await anchor.web3.PublicKey.findProgramAddress(
         [
           ammKey.toBuffer(),
           tokenMintA.toBuffer(),
@@ -280,7 +295,7 @@ const useSolanaWeb3 = () => {
         poolAuthority,
         true,
       );
-  
+
       const poolAccountB = getAssociatedTokenAddressSync(
         tokenMintB,
         poolAuthority,
@@ -288,12 +303,12 @@ const useSolanaWeb3 = () => {
       );
 
       const admin = publicKey;
-      
+
       const holderAccountA = getAssociatedTokenAddressSync(
         tokenMintA,
         admin,
       );
-  
+
       const holderAccountB = getAssociatedTokenAddressSync(
         tokenMintB,
         admin,
@@ -305,23 +320,23 @@ const useSolanaWeb3 = () => {
         flag,
         input,
         new anchor.BN(100), {
-          accounts:{
-            amm: ammKey,
-            pool: targetPool,
-            poolAuthority: poolAuthority,
-            trader: admin,
-            mintA: tokenMintA,
-            mintB:tokenMintB,
-            poolAccountA: poolAccountA,
-            poolAccountB: poolAccountB,
-            traderAccountA: holderAccountA,
-            traderAccountB: holderAccountB,
-            payer: admin,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            associatedTokenProgram : ASSOCIATED_TOKEN_PROGRAM_ID,
-            systemProgram: SystemProgram.programId
-          }
+        accounts: {
+          amm: ammKey,
+          pool: targetPool,
+          poolAuthority: poolAuthority,
+          trader: admin,
+          mintA: tokenMintA,
+          mintB: tokenMintB,
+          poolAccountA: poolAccountA,
+          poolAccountB: poolAccountB,
+          traderAccountA: holderAccountA,
+          traderAccountB: holderAccountB,
+          payer: admin,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+          systemProgram: SystemProgram.programId
         }
+      }
       )
 
     } catch (error) {
@@ -331,10 +346,10 @@ const useSolanaWeb3 = () => {
         msg: "Something wrong"
       }
     }
-   
+
   }
 
-  const getPoolList = async() => {
+  const getPoolList = async () => {
     try {
       if (!connected) {
         console.error('Wallet is not connected');
@@ -344,13 +359,13 @@ const useSolanaWeb3 = () => {
       const program = new Program(idl, programID, provider);
       const [globalState, _] = await anchor.web3.PublicKey.findProgramAddress(
         [
-            Buffer.from("global-state")
+          Buffer.from("global-state")
         ],
         program.programId
       );
       const globalStateData = await program.account.globalState.fetch(globalState);
       let poolsInformation = [];
-      for(let i = 0; i<globalStateData.pools.length; i++) {
+      for (let i = 0; i < globalStateData.pools.length; i++) {
         // get pool information
         const poolKey = globalStateData.pools[i];
         const poolInformation = await program.account.pool.fetch(poolKey);
@@ -358,7 +373,7 @@ const useSolanaWeb3 = () => {
         const tokenMintA = poolInformation.mintA;
         const tokenMintB = poolInformation.mintB;
 
-        const [poolAuthority,_1] = await anchor.web3.PublicKey.findProgramAddress(
+        const [poolAuthority, _1] = await anchor.web3.PublicKey.findProgramAddress(
           [
             ammKey.toBuffer(),
             tokenMintA.toBuffer(),
@@ -373,17 +388,17 @@ const useSolanaWeb3 = () => {
           poolAuthority,
           true,
         );
-    
+
         const poolAccountB = getAssociatedTokenAddressSync(
           tokenMintB,
           poolAuthority,
           true
         );
-        
+
         const poolABalance = await connection.getTokenAccountBalance(
           poolAccountA
         );
-    
+
         const poolBBalance = await connection.getTokenAccountBalance(
           poolAccountB
         );
@@ -391,26 +406,26 @@ const useSolanaWeb3 = () => {
         poolsInformation.push({
           "poolKey": poolKey,
           "ammKey": ammKey,
-          "tokenMintA":tokenMintA,
-          "tokenMintB":tokenMintB,
+          "tokenMintA": tokenMintA,
+          "tokenMintB": tokenMintB,
           "PoolABalance": poolABalance,
           "PoolBBalance": poolBBalance
         })
       }
       return poolsInformation;
-     
+
     } catch (error) {
       console.log(error);
     }
   }
 
-  const getPoolInfo = async(poolKey) => {
+  const getPoolInfo = async (poolKey) => {
     try {
       if (!connected) {
         console.error('Wallet is not connected');
         return;
       }
-  
+
       const provider = getProvider();
       const program = new Program(idl, programID, provider);
       // get pool information
@@ -419,7 +434,7 @@ const useSolanaWeb3 = () => {
       const tokenMintA = poolInformation.mintA;
       const tokenMintB = poolInformation.mintB;
 
-      const [poolAuthority,_1] = await anchor.web3.PublicKey.findProgramAddress(
+      const [poolAuthority, _1] = await anchor.web3.PublicKey.findProgramAddress(
         [
           ammKey.toBuffer(),
           tokenMintA.toBuffer(),
@@ -433,7 +448,7 @@ const useSolanaWeb3 = () => {
         poolAuthority,
         true,
       );
-  
+
       const poolAccountB = getAssociatedTokenAddressSync(
         tokenMintB,
         poolAuthority,
@@ -443,7 +458,7 @@ const useSolanaWeb3 = () => {
       const poolAccountABalance = await connection.getTokenAccountBalance(
         poolAccountA
       );
-  
+
       const poolAccountBBalance = await connection.getTokenAccountBalance(
         poolAccountB
       );
@@ -459,7 +474,7 @@ const useSolanaWeb3 = () => {
     }
   }
 
-  const addTokenLiquidity = async(tokenA, tokenB, poolkey) => {
+  const addTokenLiquidity = async (tokenA, tokenB, poolkey) => {
     try {
       const provider = getProvider();
       const program = new Program(idl, programID, provider);
@@ -471,17 +486,17 @@ const useSolanaWeb3 = () => {
       const tokenMintA = poolInformation.mintA;
       const tokenMintB = poolInformation.mintB;
 
-      if(tokenMintA.toString() != tokenA.mint) {
+      if (tokenMintA.toString() != tokenA.mint) {
         console.log("wrong token A address");
         return
       }
 
-      if(tokenMintB.toString() != tokenB.mint) {
+      if (tokenMintB.toString() != tokenB.mint) {
         console.log("wrong token B address");
         return
       }
 
-      const [ poolAuthority, _1] = await anchor.web3.PublicKey.findProgramAddress(
+      const [poolAuthority, _1] = await anchor.web3.PublicKey.findProgramAddress(
         [
           ammKey.toBuffer(),
           tokenMintA.toBuffer(),
@@ -506,7 +521,7 @@ const useSolanaWeb3 = () => {
         poolAuthority,
         true,
       );
-  
+
       const poolAccountB = getAssociatedTokenAddressSync(
         tokenMintB,
         poolAuthority,
@@ -517,12 +532,12 @@ const useSolanaWeb3 = () => {
         mintLiquidity,
         admin,
       );
-  
+
       const holderAccountA = getAssociatedTokenAddressSync(
         new PublicKey(tokenA.mint),
         admin,
       );
-  
+
       const holderAccountB = getAssociatedTokenAddressSync(
         new PublicKey(tokenB.mint),
         admin,
@@ -546,12 +561,12 @@ const useSolanaWeb3 = () => {
             depositorAccountB: holderAccountB,
             payer: admin,
             tokenProgram: TOKEN_PROGRAM_ID,
-            associatedTokenProgram : ASSOCIATED_TOKEN_PROGRAM_ID,
+            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
             systemProgram: SystemProgram.programId
           }
         }
       );
-    } catch(e) {
+    } catch (e) {
       console.log(e);
       return {
         status: "ERROR",
@@ -560,7 +575,7 @@ const useSolanaWeb3 = () => {
     }
   }
 
-  const claimLiquidity = async(poolkey, percentage) => {
+  const claimLiquidity = async (poolkey, percentage) => {
     try {
       const provider = getProvider();
       const program = new Program(idl, programID, provider);
@@ -572,7 +587,7 @@ const useSolanaWeb3 = () => {
       const tokenMintA = poolInformation.mintA;
       const tokenMintB = poolInformation.mintB;
 
-      const [poolAuthority,_1] = await anchor.web3.PublicKey.findProgramAddress(
+      const [poolAuthority, _1] = await anchor.web3.PublicKey.findProgramAddress(
         [
           ammKey.toBuffer(),
           tokenMintA.toBuffer(),
@@ -597,7 +612,7 @@ const useSolanaWeb3 = () => {
         poolAuthority,
         true,
       );
-  
+
       const poolAccountB = getAssociatedTokenAddressSync(
         tokenMintB,
         poolAuthority,
@@ -614,61 +629,61 @@ const useSolanaWeb3 = () => {
         tokenMintA,
         admin,
       );
-  
+
       const holderAccountB = getAssociatedTokenAddressSync(
         tokenMintB,
         admin,
       );
 
-      const amount =  await connection.getTokenAccountBalance(
+      const amount = await connection.getTokenAccountBalance(
         liquidityAccount
       );
-  
+
       const transaction = new Transaction();
-  
+
       // withdraw the liquidity
-      const tx1 =  program.instruction.withdrawLiquidityTokena(
-        new anchor.BN(Number(amount.value.amount  * percentage / 100)),
+      const tx1 = program.instruction.withdrawLiquidityTokena(
+        new anchor.BN(Number(amount.value.amount * percentage / 100)),
         {
-        accounts: {
-          amm: ammKey,
-          pool: poolKey,
-          poolAuthority,
-          depositor: admin,
-          mintLiquidity,
-          mintA: tokenMintA,
-          mintB: tokenMintB,
-          poolAccountA,
-          depositorAccountLiquidity: liquidityAccount,
-          depositorAccountA:holderAccountA,
-          payer: admin,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-          systemProgram: SystemProgram.programId
-        }
-      });
+          accounts: {
+            amm: ammKey,
+            pool: poolKey,
+            poolAuthority,
+            depositor: admin,
+            mintLiquidity,
+            mintA: tokenMintA,
+            mintB: tokenMintB,
+            poolAccountA,
+            depositorAccountLiquidity: liquidityAccount,
+            depositorAccountA: holderAccountA,
+            payer: admin,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+            systemProgram: SystemProgram.programId
+          }
+        });
       transaction.add(tx1);
 
-      const tx2 =  program.instruction.withdrawLiquidityTokenb(
+      const tx2 = program.instruction.withdrawLiquidityTokenb(
         new anchor.BN(Number(amount.value.amount) * percentage / 100),
         {
-        accounts: {
-          amm: ammKey,
-          pool: poolKey,
-          poolAuthority,
-          depositor: admin,
-          mintLiquidity,
-          mintA: tokenMintA,
-          mintB: tokenMintB,
-          poolAccountB,
-          depositorAccountLiquidity: liquidityAccount,
-          depositorAccountB:holderAccountB,
-          payer: admin,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-          systemProgram: SystemProgram.programId
-        }
-      });
+          accounts: {
+            amm: ammKey,
+            pool: poolKey,
+            poolAuthority,
+            depositor: admin,
+            mintLiquidity,
+            mintA: tokenMintA,
+            mintB: tokenMintB,
+            poolAccountB,
+            depositorAccountLiquidity: liquidityAccount,
+            depositorAccountB: holderAccountB,
+            payer: admin,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+            systemProgram: SystemProgram.programId
+          }
+        });
       transaction.add(tx2);
 
       // Set the fee payer to the sender's public key

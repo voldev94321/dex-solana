@@ -122,7 +122,6 @@ const TokenSelect = ({ token, handleSelect }: TokenSelectProps) => {
   }, [wallet.connected]);
 
   React.useEffect(() => {
-    console.log(token);
     if(token){
       setSelectedToken(token);
     }

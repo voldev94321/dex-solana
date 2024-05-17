@@ -29,7 +29,6 @@ const PoolDetails = () => {
       setTimeout(async () => {
         // console.log(address);
         const poolInformation = await getPoolInfo(address);
-        console.log( "poolInfo", poolInformation);
         setPoolInformation(poolInformation);
 
         setTokenA(await getTokenMetadata(poolInformation?.tokenMintA));

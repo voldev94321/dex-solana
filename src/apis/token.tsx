@@ -21,7 +21,6 @@ export async function getTokenMetadata(tokenMint: string) {
       const uri = metadata.uri;
       const fetchResponse = await fetch(uri);
       const offchainMetadata = await fetchResponse.json();
-      console.log("offchainMetadata->", offchainMetadata, metadata);
       return { ...metadata, offchainMetadata };
     }
   } catch (error) {
@@ -44,7 +43,6 @@ export const getTokenList = (callback: any) => {
 export async function fetchTokenBalances( walletAddress: string, tokenAddress: string) {
   try {
     const tokenArrays = await getTokenAccounts(walletAddress, new Connection(RPC_URL));
-    console.log("tokenArrays", tokenArrays);
     // return tokenBalance;
   } catch (error) {
     console.error('Error fetching token balance:', error);

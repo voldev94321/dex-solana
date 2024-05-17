@@ -26,7 +26,6 @@ const Swap = () => {
   const [poolKey, setPoolKey] = React.useState('');
 
   const handleSwap = async () => {
-    console.log(tokenAAmount);
     const result = await swap(poolKey, tokenA.mint, tokenB.mint, tokenAAmount);
     if (!result) {
       toast({
@@ -45,7 +44,6 @@ const Swap = () => {
   };
 
   const fetchData = async () => {
-    console.log("timer", tokenA, tokenB);
     if (!tokenA || !tokenB) {
       return;
     }
@@ -77,7 +75,6 @@ const Swap = () => {
         }
       }
     }
-    console.log("poollist", poolList);
   };
 
   const handleHalf = () => {

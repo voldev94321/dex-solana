@@ -664,6 +664,33 @@
       }
     }
   ],
+  "events": [
+    {
+      "name": "DepositLiquidityEvent",
+      "fields": [
+        {
+          "name": "tokenA",
+          "type": "publicKey",
+          "index": true
+        },
+        {
+          "name": "tokenB",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "amountA",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "amountB",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    }
+  ],
   "errors": [
     {
       "code": 6000,
@@ -692,6 +719,6 @@
     }
   ],
   "metadata": {
-    "address": "FeXjFPtkPLNWMHdkhTX3zb2pDXVP7RciJ6Cevj55nJk2"
+    "address": "FjXLQAUaDBqPDXF4sD1gGKJm4waqxcJ3GziUquKgLJGC"
   }
 }
