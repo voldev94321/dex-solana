@@ -24,7 +24,7 @@ const opts = {
   preflightCommitment: "processed",
 };
 
-const RPC_URL = `https://devnet.helius-rpc.com/?api-key=`;
+const RPC_URL = `${process.env.NEXT_PUBLIC_RPC}`;
 const connection = new Connection(RPC_URL, 'confirmed');
 const programID = new PublicKey(idl.metadata.address);
 
@@ -412,6 +412,7 @@ const useSolanaWeb3 = () => {
           "PoolBBalance": poolBBalance
         })
       }
+      console.log("poolsInformation->", poolsInformation);
       return poolsInformation;
 
     } catch (error) {
