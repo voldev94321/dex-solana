@@ -640,13 +640,18 @@ const useSolanaWeb3 = () => {
         liquidityAccount
       );
 
-      const transaction = new Transaction();
+      const [globalState, _] = await anchor.web3.PublicKey.findProgramAddress(
+        [
+          Buffer.from("global-state")
+        ],
+        program.programId
+      );
 
-      // withdraw the liquidity
-      const tx1 = program.instruction.withdrawLiquidityTokena(
-        new anchor.BN(Number(amount.value.amount * percentage / 100)),
+      const tx1 = await program.rpc.withdrawLiquidity(
+        new anchor.BN(Number(amount.value.amount) * percentage / 100),
         {
           accounts: {
+            globalState,
             amm: ammKey,
             pool: poolKey,
             poolAuthority,
@@ -655,47 +660,71 @@ const useSolanaWeb3 = () => {
             mintA: tokenMintA,
             mintB: tokenMintB,
             poolAccountA,
-            depositorAccountLiquidity: liquidityAccount,
-            depositorAccountA: holderAccountA,
-            payer: admin,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-            systemProgram: SystemProgram.programId
-          }
-        });
-      transaction.add(tx1);
-
-      const tx2 = program.instruction.withdrawLiquidityTokenb(
-        new anchor.BN(Number(amount.value.amount) * percentage / 100),
-        {
-          accounts: {
-            amm: ammKey,
-            pool: poolKey,
-            poolAuthority,
-            depositor: admin,
-            mintLiquidity,
-            mintA: tokenMintA,
-            mintB: tokenMintB,
             poolAccountB,
             depositorAccountLiquidity: liquidityAccount,
+            depositorAccountA: holderAccountA,
             depositorAccountB: holderAccountB,
             payer: admin,
             tokenProgram: TOKEN_PROGRAM_ID,
             associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
             systemProgram: SystemProgram.programId
           }
-        });
-      transaction.add(tx2);
+        }
+      );
+        
+      // withdraw the liquidity
+      // const tx1 = program.instruction.withdrawLiquidityTokena(
+      //   new anchor.BN(Number(amount.value.amount) * percentage / 100),
+      //   {
+      //     accounts: {
+      //       amm: ammKey,
+      //       pool: poolKey,
+      //       poolAuthority,
+      //       depositor: admin,
+      //       mintLiquidity,
+      //       mintA: tokenMintA,
+      //       mintB: tokenMintB,
+      //       poolAccountA,
+      //       depositorAccountLiquidity: liquidityAccount,
+      //       depositorAccountA: holderAccountA,
+      //       payer: admin,
+      //       tokenProgram: TOKEN_PROGRAM_ID,
+      //       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      //       systemProgram: SystemProgram.programId
+      //     }
+      //   });
 
-      // Set the fee payer to the sender's public key
-      transaction.feePayer = publicKey;
-      // Get the recent blockhash
-      const recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
-      // Sign the transaction
-      transaction.recentBlockhash = recentBlockhash;
-      // transaction.partialSign(mint);
-      const signedTransaction = await wallet.adapter.signTransaction(transaction);
-      await connection.sendRawTransaction(signedTransaction.serialize());
+      // const tx2 = program.instruction.withdrawLiquidityTokenb(
+      //   new anchor.BN(Number(amount.value.amount) * percentage / 100),
+      //   {
+      //     accounts: {
+      //       amm: ammKey,
+      //       pool: poolKey,
+      //       poolAuthority,
+      //       depositor: admin,
+      //       mintLiquidity,
+      //       mintA: tokenMintA,
+      //       mintB: tokenMintB,
+      //       poolAccountB,
+      //       depositorAccountLiquidity: liquidityAccount,
+      //       depositorAccountB: holderAccountB,
+      //       payer: admin,
+      //       tokenProgram: TOKEN_PROGRAM_ID,
+      //       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      //       systemProgram: SystemProgram.programId
+      //     }
+      //   });
+      // transaction.add(tx1);
+      // transaction.add(tx2);
+      // // Set the fee payer to the sender's public key
+      // transaction.feePayer = publicKey;
+      // // Get the recent blockhash
+      // const recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
+      // // Sign the transaction
+      // transaction.recentBlockhash = recentBlockhash;
+      // // transaction.partialSign(mint);
+      // const signedTransaction = await wallet.adapter.signTransaction(transaction);
+      // await connection.sendRawTransaction(signedTransaction.serialize());
     } catch (error) {
       console.log(error);
       return {
