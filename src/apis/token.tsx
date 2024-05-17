@@ -8,7 +8,7 @@ import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { Connection, GetProgramAccountsFilter, PublicKey } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
-const RPC_URL = `https://api.devnet.solana.com `;
+const RPC_URL = `${process.env.NEXT_PUBLIC_RPC}`;
 const umi = createUmi(RPC_URL);
 const conn = new Connection(RPC_URL);
 
